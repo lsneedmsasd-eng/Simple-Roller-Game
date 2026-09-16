@@ -8,6 +8,11 @@
    ===================================================================== */
 
 var Player = {
+dashState: "ready", // "ready", "dashing", or "cooldown"  
+dashTimer: 0,  
+dashWasDown: false, // was SHIFT already held last frame?  
+dashDirection: 1, // which way we dash: -1 left, 1 right  
+trail: [] // wind trail positions behind us  
   x: 0,            // position in pixels, left edge of the box
   y: 0,            // position in pixels, top edge of the box
   vx: 0,           // speed left and right

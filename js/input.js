@@ -7,6 +7,7 @@
    ===================================================================== */
 
 var Input = {
+  dash: false, // true while SHIFT is held  
   left: false,
   right: false,
   jump: false,
@@ -30,6 +31,7 @@ window.addEventListener("keyup", function (event) {
 // One place that decides which key means what.
 // WANT TO ADD A KEY? Add a line here.
 function setKey(key, isDown) {
+  if (key === "Shift") { Input.dash = isDown; return; }  
   if (key === "ArrowLeft"  || key === "a" || key === "A") { Input.left  = isDown; }
   if (key === "ArrowRight" || key === "d" || key === "D") { Input.right = isDown; }
   if (key === "ArrowUp"    || key === " " || key === "w" || key === "W") { Input.jump = isDown; }
