@@ -6,8 +6,7 @@
    and decides to move.
    ===================================================================== */
 
-var Input = {
-  dash: false, // true while SHIFT is held  
+var Input = { 
   left: false,
   right: false,
   jump: false,
