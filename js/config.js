@@ -34,9 +34,5 @@ var CONFIG = {
 
   // --- rules ----------------------------------------------------------
   START_LEVEL: 0      // which level in data/levels.json to load first
-
-DASH_SPEED: 14, // how fast the dash moves, pixels per frame  
-DASH_FRAMES: 9, // how long the dash lasts (9 frames = 0.15 seconds)  
-DASH_COOLDOWN_FRAMES: 120 // 120 frames = 2 second wait between dashes  
 };
 
