@@ -12,6 +12,7 @@ Push your changes, then open your GitHub Pages link.
 Press `Ctrl + Shift + R` to hard refresh, or you will see the old version.
 
 - LEFT / RIGHT arrow - roll
+- SHIFT - dash
 - SPACE or UP arrow - jump
 - R - restart the level
 

@@ -19,9 +19,11 @@ var CONFIG = {
 
   // --- how the player moves -------------------------------------------
   MOVE_SPEED: 4,      // pixels per frame left and right
+  DASH_SPEED: 12,     // a burst of speed when the player dashes
   JUMP_POWER: 15,     // how hard the jump pushes UP. bigger = higher
   GRAVITY: 0.8,       // how hard the world pulls DOWN. bigger = heavier
   MAX_FALL: 16,       // fastest the player is allowed to fall
+  DASH_COOLDOWN: 18,  // frames before a new dash can start
 
   // --- the player's size ----------------------------------------------
   PLAYER_SIZE: 32,    // the player collides as a 32x32 box

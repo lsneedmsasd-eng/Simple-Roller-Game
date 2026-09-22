@@ -13,7 +13,8 @@ var Player = {
   vx: 0,           // speed left and right
   vy: 0,           // speed up and down
   onGround: false, // is the player standing on something right now?
-  angle: 0         // how far the circle has rolled, for drawing the dot
+  angle: 0,        // how far the circle has rolled, for drawing the dot
+  dashCooldown: 0  // frames left before another dash can trigger
 };
 
 // Put the player back at the level's S square.
@@ -24,6 +25,7 @@ Player.reset = function () {
   Player.vy = 0;
   Player.onGround = false;
   Player.angle = 0;
+  Player.dashCooldown = 0;
 };
 
 // Run one frame of player movement.
@@ -31,9 +33,19 @@ Player.update = function () {
   var size = CONFIG.PLAYER_SIZE;
 
   // --- 1. decide how fast to go sideways ------------------------------
+  Player.dashCooldown = Math.max(0, Player.dashCooldown - 1);
   Player.vx = 0;
-  if (Input.left)  { Player.vx = -CONFIG.MOVE_SPEED; }
-  if (Input.right) { Player.vx =  CONFIG.MOVE_SPEED; }
+
+  if (Input.dash && Player.dashCooldown === 0) {
+    if (Input.left)  { Player.vx = -CONFIG.DASH_SPEED; }
+    if (Input.right) { Player.vx =  CONFIG.DASH_SPEED; }
+    if (Player.vx !== 0) { Player.dashCooldown = CONFIG.DASH_COOLDOWN; }
+  }
+
+  if (Player.vx === 0) {
+    if (Input.left)  { Player.vx = -CONFIG.MOVE_SPEED; }
+    if (Input.right) { Player.vx =  CONFIG.MOVE_SPEED; }
+  }
 
   // --- 2. jump, but only if we are standing on something --------------
   if (Input.jump && Player.onGround) {

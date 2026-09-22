@@ -10,6 +10,7 @@ var Input = {
   left: false,
   right: false,
   jump: false,
+  dash: false,
   restart: false
 };
 
