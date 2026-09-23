@@ -57,8 +57,7 @@ Game.update = function () {
   }
 
   if (Player.hasWon()) {
-    Game.mode = "won";
-    Game.showMessage("You made it. Press R to play again.");
+    Game.startRandomLevel();
     return;
   }
 };
