@@ -14,14 +14,14 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/level.js'), 'utf8
 const Level = sandbox.Level;
 Level.levels = [];
 
-const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'spikepit', 'enemy', 'finish']);
+const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'spikepit', 'enemy', 'finish', 'finishHigh']);
 
 for (let run = 0; run < 20; run += 1) {
   const levelNumber = Level.generateRandom();
   const generated = Level.levels[levelNumber];
 
   assert.strictEqual(generated.pieces[0], 'start');
-  assert.strictEqual(generated.pieces[generated.pieces.length - 1], 'finish');
+  assert.ok(['finish', 'finishHigh'].includes(generated.pieces[generated.pieces.length - 1]));
   assert.ok(generated.pieces.length >= 10 && generated.pieces.length <= 16);
   assert.ok(generated.pieces.includes('ladder'));
   assert.ok(generated.pieces.includes('vertical'));

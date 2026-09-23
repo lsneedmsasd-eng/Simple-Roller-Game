@@ -60,6 +60,7 @@ Each picture is 8 columns wide and 10 rows tall:
 - `^` is a spike
 - `S` is where the player starts
 - `F` is the finish
+- Some generated levels place the finish high up, so use a ladder to reach it.
 
 To make a new level: change the list of names.
 To make a new piece: copy one, rename it, redraw the picture, then use

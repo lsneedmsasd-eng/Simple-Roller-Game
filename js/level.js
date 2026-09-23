@@ -56,7 +56,8 @@ Level.generateRandom = function () {
   pieces.push("vertical");
   pieces.push("flat");
   pieces.push("enemy");
-  pieces.push("finish");
+  var finishName = Level.levels.length % 2 === 0 ? "finishHigh" : "finish";
+  pieces.push(finishName);
   Level.levels.push({
     name: "Random Run " + (Level.levels.length - 1),
     pieces: pieces
