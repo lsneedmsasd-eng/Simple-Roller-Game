@@ -47,4 +47,9 @@ Player.update();
 assert.strictEqual(Player.vx, sandbox.CONFIG.DASH_SPEED, 'dash should burst the player to the dash speed');
 assert.ok(Player.dashCooldown > 0, 'dash should trigger a cooldown');
 
+for (let frame = 1; frame < sandbox.CONFIG.DASH_DURATION; frame += 1) {
+  Player.update();
+  assert.strictEqual(Player.vx, sandbox.CONFIG.DASH_SPEED, 'dash should last for its configured duration');
+}
+
 console.log('dash behavior test passed');

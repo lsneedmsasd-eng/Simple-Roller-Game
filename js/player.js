@@ -14,7 +14,9 @@ var Player = {
   vy: 0,           // speed up and down
   onGround: false, // is the player standing on something right now?
   angle: 0,        // how far the circle has rolled, for drawing the dot
-  dashCooldown: 0  // frames left before another dash can trigger
+  dashCooldown: 0, // frames left before another dash can trigger
+  dashFrames: 0,   // frames left in the current dash
+  dashDirection: 0 // direction of the current dash
 };
 
 // Put the player back at the level's S square.
@@ -26,6 +28,8 @@ Player.reset = function () {
   Player.onGround = false;
   Player.angle = 0;
   Player.dashCooldown = 0;
+  Player.dashFrames = 0;
+  Player.dashDirection = 0;
 };
 
 // Run one frame of player movement.
@@ -34,12 +38,21 @@ Player.update = function () {
 
   // --- 1. decide how fast to go sideways ------------------------------
   Player.dashCooldown = Math.max(0, Player.dashCooldown - 1);
+  Player.dashFrames = Math.max(0, Player.dashFrames - 1);
   Player.vx = 0;
 
-  if (Input.dash && Player.dashCooldown === 0) {
-    if (Input.left)  { Player.vx = -CONFIG.DASH_SPEED; }
-    if (Input.right) { Player.vx =  CONFIG.DASH_SPEED; }
-    if (Player.vx !== 0) { Player.dashCooldown = CONFIG.DASH_COOLDOWN; }
+  if (Player.dashFrames > 0) {
+    Player.vx = Player.dashDirection * CONFIG.DASH_SPEED;
+  } else if (Input.dash && Player.dashCooldown === 0) {
+    var requestedDirection = 0;
+    if (Input.left)  { requestedDirection = -1; }
+    if (Input.right) { requestedDirection = 1; }
+    if (requestedDirection !== 0) {
+      Player.dashDirection = requestedDirection;
+      Player.vx = requestedDirection * CONFIG.DASH_SPEED;
+      Player.dashFrames = CONFIG.DASH_DURATION;
+      Player.dashCooldown = CONFIG.DASH_COOLDOWN;
+    }
   }
 
   if (Player.vx === 0) {
