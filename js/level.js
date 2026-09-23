@@ -106,13 +106,18 @@ Level.spawnEnemies = function () {
     for (var col = 0; col < Level.cols; col++) {
       var kind = Level.charAt(col, row);
       if (!Level.isEnemyChar(kind)) { continue; }
+      var supportRow = row + 1;
+      while (supportRow < CONFIG.ROWS && !Level.isSolid(col, supportRow)) {
+        supportRow++;
+      }
+      if (supportRow >= CONFIG.ROWS) { continue; }
       var speed = 1.5;
       if (kind === "M") { speed = 2.5; }
-      if (kind === "B") { speed = 2; }
+      if (kind === "B") { speed = 1.8; }
       if (kind === "H") { speed = 0.8; }
       Level.enemies.push({
         x: col * CONFIG.TILE + 4,
-        y: row * CONFIG.TILE + 8,
+        y: (supportRow - 1) * CONFIG.TILE + 8,
         width: CONFIG.ENEMY_SIZE,
         height: CONFIG.ENEMY_SIZE,
         kind: kind,
@@ -133,24 +138,31 @@ Level.enemyHitsSolid = function (enemy, x, y) {
   return Level.isSolid(left, bottom) || Level.isSolid(right, bottom);
 };
 
+Level.enemyOverlaps = function (enemy, x, y) {
+  for (var i = 0; i < Level.enemies.length; i++) {
+    var other = Level.enemies[i];
+    if (other === enemy || other.defeated) { continue; }
+    if (x < other.x + other.width && x + enemy.width > other.x &&
+        y < other.y + other.height && y + enemy.height > other.y) {
+      return true;
+    }
+  }
+  return false;
+};
+
 Level.updateEnemies = function () {
   Level.enemyFrame++;
   for (var i = 0; i < Level.enemies.length; i++) {
     var enemy = Level.enemies[i];
     if (enemy.defeated) { continue; }
-    if (enemy.kind === "B") {
-      enemy.x = enemy.x + enemy.direction * enemy.speed;
-      enemy.y = enemy.baseY + Math.sin((Level.enemyFrame + enemy.phase) / 12) * 24;
+    var nextX = enemy.x + enemy.direction * enemy.speed;
+    var hasFloor = Level.enemyHitsSolid(enemy, nextX, enemy.y);
+    var ahead = Level.isSolid(Math.floor((nextX + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
+      Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE));
+    if (hasFloor || ahead || Level.enemyOverlaps(enemy, nextX, enemy.y)) {
+      enemy.direction = enemy.direction * -1;
     } else {
-      var nextX = enemy.x + enemy.direction * enemy.speed;
-      var hasFloor = Level.enemyHitsSolid(enemy, nextX, enemy.y);
-      var ahead = Level.isSolid(Math.floor((nextX + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
-        Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE));
-      if (hasFloor || ahead) {
-        enemy.direction = enemy.direction * -1;
-      } else {
-        enemy.x = nextX;
-      }
+      enemy.x = nextX;
     }
   }
 };
