@@ -39,12 +39,6 @@ Game.update = function () {
     return;
   }
 
-  if (Input.randomLevel) {
-    Game.startRandomLevel();
-    Input.randomLevel = false;
-    return;
-  }
-
   // If we are not playing, nothing moves. We just wait for R.
   if (Game.mode !== "playing") { return; }
 

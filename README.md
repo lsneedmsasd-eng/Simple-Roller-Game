@@ -14,6 +14,7 @@ Press `Ctrl + Shift + R` to hard refresh, or you will see the old version.
 - LEFT / RIGHT arrow - roll
 - SHIFT - dash
 - SPACE or UP arrow - jump
+- UP/W and DOWN/S - climb ladders
 - R - restart the level
 
 ## Where everything lives

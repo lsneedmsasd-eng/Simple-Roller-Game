@@ -40,11 +40,11 @@ Level.loadData = function (whenDone) {
 };
 
 Level.generateRandom = function () {
-  var safePieces = ["flat", "step", "platform", "stairs"];
-  var challengePieces = ["gap", "spikes", "spikepit"];
-  var pieces = ["start"];
+  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical"];
+  var challengePieces = ["gap", "spikes", "spikepit", "enemy"];
+  var pieces = ["start", "ladder"];
   var previousWasChallenge = false;
-  var middleCount = 8 + Math.floor(Math.random() * 7);
+  var middleCount = 6 + Math.floor(Math.random() * 5);
 
   for (var i = 0; i < middleCount; i++) {
     var choices = previousWasChallenge ? safePieces : safePieces.concat(challengePieces);
@@ -53,6 +53,9 @@ Level.generateRandom = function () {
     previousWasChallenge = challengePieces.indexOf(pieceName) >= 0;
   }
 
+  pieces.push("vertical");
+  pieces.push("flat");
+  pieces.push("enemy");
   pieces.push("finish");
   Level.levels.push({
     name: "Random Run " + (Level.levels.length - 1),
@@ -117,6 +120,8 @@ Level.charAt = function (col, row) {
 
 Level.isSolid  = function (col, row) { return Level.charAt(col, row) === "#"; };
 Level.isSpike  = function (col, row) { return Level.charAt(col, row) === "^"; };
+Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };
+Level.isEnemy  = function (col, row) { return Level.charAt(col, row) === "E"; };
 Level.isFinish = function (col, row) { return Level.charAt(col, row) === "F"; };
 
 // How wide is the whole world, in pixels?

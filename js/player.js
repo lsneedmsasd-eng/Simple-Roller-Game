@@ -61,14 +61,23 @@ Player.update = function () {
   }
 
   // --- 2. jump, but only if we are standing on something --------------
-  if (Input.jump && Player.onGround) {
+  var onLadder = Collide.hitsLadder(Player.x, Player.y, size, size);
+  var climbing = onLadder && (Input.up || Input.down);
+
+  if (climbing) {
+    Player.vy = Input.up ? -CONFIG.CLIMB_SPEED : CONFIG.CLIMB_SPEED;
+    Player.onGround = false;
+  } else if (Input.jump && Player.onGround) {
     Player.vy = -CONFIG.JUMP_POWER;   // negative is UP
     Player.onGround = false;
+    Player.vy = Player.vy + CONFIG.GRAVITY;
+  } else if (onLadder) {
+    Player.vy = 0;
+  } else {
+    // --- 3. gravity pulls down every single frame ---------------------
+    Player.vy = Player.vy + CONFIG.GRAVITY;
+    if (Player.vy > CONFIG.MAX_FALL) { Player.vy = CONFIG.MAX_FALL; }
   }
-
-  // --- 3. gravity pulls down every single frame -----------------------
-  Player.vy = Player.vy + CONFIG.GRAVITY;
-  if (Player.vy > CONFIG.MAX_FALL) { Player.vy = CONFIG.MAX_FALL; }
 
   // --- 4. move sideways, one pixel at a time, stopping at walls -------
   var stepX = 0;
@@ -105,6 +114,7 @@ Player.update = function () {
 Player.isDead = function () {
   var size = CONFIG.PLAYER_SIZE;
   if (Collide.hitsSpike(Player.x, Player.y, size, size)) { return true; }
+  if (Collide.hitsEnemy(Player.x, Player.y, size, size)) { return true; }
   if (Player.y > CONFIG.CANVAS_H + 200) { return true; }   // fell off the world
   return false;
 };

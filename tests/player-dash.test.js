@@ -22,7 +22,7 @@ const sandbox = {
     DASH_DURATION: 6,
   },
   Input: { left: false, right: false, jump: false, dash: false },
-  Collide: { hitsSolid() { return false; } },
+  Collide: { hitsSolid() { return false; }, hitsLadder() { return false; } },
 };
 
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/config.js'), 'utf8'), sandbox);

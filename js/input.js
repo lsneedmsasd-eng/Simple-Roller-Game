@@ -9,17 +9,18 @@
 var Input = { 
   left: false,
   right: false,
+  up: false,
+  down: false,
   jump: false,
   dash: false,
-  restart: false,
-  randomLevel: false
+  restart: false
 };
 
 // Called whenever a key goes DOWN.
 window.addEventListener("keydown", function (event) {
   setKey(event.key, true);
   // stop the arrow keys and space from scrolling the page
-  if (["ArrowLeft", "ArrowRight", "ArrowUp", " "].indexOf(event.key) >= 0) {
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].indexOf(event.key) >= 0) {
     event.preventDefault();
   }
 });
@@ -35,7 +36,8 @@ function setKey(key, isDown) {
   if (key === "Shift") { Input.dash = isDown; return; }  
   if (key === "ArrowLeft"  || key === "a" || key === "A") { Input.left  = isDown; }
   if (key === "ArrowRight" || key === "d" || key === "D") { Input.right = isDown; }
+  if (key === "ArrowUp" || key === "w" || key === "W") { Input.up = isDown; }
+  if (key === "ArrowDown" || key === "s" || key === "S") { Input.down = isDown; }
   if (key === "ArrowUp"    || key === " " || key === "w" || key === "W") { Input.jump = isDown; }
   if (key === "r" || key === "R") { Input.restart = isDown; }
-  if (key === "g" || key === "G") { Input.randomLevel = isDown; }
 }

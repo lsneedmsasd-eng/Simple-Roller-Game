@@ -65,6 +65,8 @@ Draw.world = function () {
 
       if (here === "#") { Draw.block(x, y, size); }
       if (here === "^") { Draw.spike(x, y, size); }
+      if (here === "L") { Draw.ladder(x, y, size); }
+      if (here === "E") { Draw.enemy(x, y, size); }
       if (here === "F") { Draw.finish(x, y, size); }
     }
   }
@@ -93,6 +95,33 @@ Draw.spike = function (x, y, size) {
   ctx.lineTo(x + size, y + size);
   ctx.closePath();
   ctx.fill();
+};
+
+Draw.ladder = function (x, y, size) {
+  var ctx = Draw.ctx;
+  ctx.strokeStyle = "#ff0000";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(x + 10, y + 2);
+  ctx.lineTo(x + 10, y + size - 2);
+  ctx.moveTo(x + size - 10, y + 2);
+  ctx.lineTo(x + size - 10, y + size - 2);
+  ctx.moveTo(x + 10, y + 10);
+  ctx.lineTo(x + size - 10, y + 10);
+  ctx.moveTo(x + 10, y + size / 2);
+  ctx.lineTo(x + size - 10, y + size / 2);
+  ctx.moveTo(x + 10, y + size - 10);
+  ctx.lineTo(x + size - 10, y + size - 10);
+  ctx.stroke();
+};
+
+Draw.enemy = function (x, y, size) {
+  var ctx = Draw.ctx;
+  ctx.fillStyle = "#ff0000";
+  ctx.fillRect(x + 6, y + 10, size - 12, size - 10);
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(x + 12, y + 18, 4, 4);
+  ctx.fillRect(x + size - 16, y + 18, 4, 4);
 };
 
 // The finish: a black pole with a flag on it.
