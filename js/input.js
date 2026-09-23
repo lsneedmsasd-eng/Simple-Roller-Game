@@ -11,7 +11,8 @@ var Input = {
   right: false,
   jump: false,
   dash: false,
-  restart: false
+  restart: false,
+  randomLevel: false
 };
 
 // Called whenever a key goes DOWN.
@@ -36,4 +37,5 @@ function setKey(key, isDown) {
   if (key === "ArrowRight" || key === "d" || key === "D") { Input.right = isDown; }
   if (key === "ArrowUp"    || key === " " || key === "w" || key === "W") { Input.jump = isDown; }
   if (key === "r" || key === "R") { Input.restart = isDown; }
+  if (key === "g" || key === "G") { Input.randomLevel = isDown; }
 }

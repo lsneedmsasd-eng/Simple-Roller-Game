@@ -39,6 +39,28 @@ Level.loadData = function (whenDone) {
     });
 };
 
+Level.generateRandom = function () {
+  var safePieces = ["flat", "step", "platform", "stairs"];
+  var challengePieces = ["gap", "spikes", "spikepit"];
+  var pieces = ["start"];
+  var previousWasChallenge = false;
+  var middleCount = 8 + Math.floor(Math.random() * 7);
+
+  for (var i = 0; i < middleCount; i++) {
+    var choices = previousWasChallenge ? safePieces : safePieces.concat(challengePieces);
+    var pieceName = choices[Math.floor(Math.random() * choices.length)];
+    pieces.push(pieceName);
+    previousWasChallenge = challengePieces.indexOf(pieceName) >= 0;
+  }
+
+  pieces.push("finish");
+  Level.levels.push({
+    name: "Random Run " + (Level.levels.length - 1),
+    pieces: pieces
+  });
+  return Level.levels.length - 1;
+};
+
 // --- STEP 2: glue the pieces together ---------------------------------
 Level.build = function (levelNumber) {
   var level = Level.levels[levelNumber];

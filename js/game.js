@@ -22,6 +22,10 @@ Game.startLevel = function (levelNumber) {
   Game.showMessage("");
 };
 
+Game.startRandomLevel = function () {
+  Game.startLevel(Level.generateRandom());
+};
+
 Game.showMessage = function (text) {
   document.getElementById("message").textContent = text;
 };
@@ -32,6 +36,12 @@ Game.update = function () {
   // R always restarts, no matter what mode we are in.
   if (Input.restart) {
     Game.startLevel(Game.levelNumber);
+    return;
+  }
+
+  if (Input.randomLevel) {
+    Game.startRandomLevel();
+    Input.randomLevel = false;
     return;
   }
 
