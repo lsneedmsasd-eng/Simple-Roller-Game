@@ -16,7 +16,10 @@ var Player = {
   angle: 0,        // how far the circle has rolled, for drawing the dot
   dashCooldown: 0, // frames left before another dash can trigger
   dashFrames: 0,   // frames left in the current dash
-  dashDirection: 0 // direction of the current dash
+  dashDirection: 0, // direction of the current dash
+  facing: 1,
+  attackCooldown: 0,
+  attackFrames: 0
 };
 
 // Put the player back at the level's S square.
@@ -30,11 +33,23 @@ Player.reset = function () {
   Player.dashCooldown = 0;
   Player.dashFrames = 0;
   Player.dashDirection = 0;
+  Player.facing = 1;
+  Player.attackCooldown = 0;
+  Player.attackFrames = 0;
 };
 
 // Run one frame of player movement.
 Player.update = function () {
   var size = CONFIG.PLAYER_SIZE;
+
+  Player.attackCooldown = Math.max(0, Player.attackCooldown - 1);
+  Player.attackFrames = Math.max(0, Player.attackFrames - 1);
+  if (Input.left) { Player.facing = -1; }
+  if (Input.right) { Player.facing = 1; }
+  if (Input.attack && Player.attackCooldown === 0) {
+    Player.attackFrames = CONFIG.ATTACK_DURATION;
+    Player.attackCooldown = CONFIG.ATTACK_COOLDOWN;
+  }
 
   // --- 1. decide how fast to go sideways ------------------------------
   Player.dashCooldown = Math.max(0, Player.dashCooldown - 1);
@@ -108,7 +123,14 @@ Player.update = function () {
 
   // --- 6. keep the player inside the left edge of the world -----------
   if (Player.x < 0) { Player.x = 0; }
+
+  if (Player.attackFrames > 0 && Level.hitEnemies) {
+    var attackX = Player.facing > 0 ? Player.x + size : Player.x - CONFIG.ATTACK_RANGE;
+    Level.hitEnemies(attackX, Player.y + 6, CONFIG.ATTACK_RANGE, size - 12);
+  }
 };
+
+Player.isAttacking = function () { return Player.attackFrames > 0; };
 
 // Did the player just touch something deadly?
 Player.isDead = function () {

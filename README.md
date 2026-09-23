@@ -15,7 +15,10 @@ Press `Ctrl + Shift + R` to hard refresh, or you will see the old version.
 - SHIFT - dash
 - SPACE or UP arrow - jump
 - UP/W and DOWN/S - climb ladders
+- X/J - melee attack
 - R - restart the level
+
+Enemies have different movement patterns: walkers patrol platforms, runners move faster, brutes are larger, and bats fly. Press X or J to defeat them at close range.
 
 ## Where everything lives
 

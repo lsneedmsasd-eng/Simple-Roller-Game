@@ -66,9 +66,14 @@ Draw.world = function () {
       if (here === "#") { Draw.block(x, y, size); }
       if (here === "^") { Draw.spike(x, y, size); }
       if (here === "L") { Draw.ladder(x, y, size); }
-      if (here === "E") { Draw.enemy(x, y, size); }
+      if (here === "*" || here === "+" || here === "~") { Draw.decor(x, y, size, here); }
       if (here === "F") { Draw.finish(x, y, size); }
     }
+  }
+
+  for (var enemyIndex = 0; enemyIndex < Level.enemies.length; enemyIndex++) {
+    var enemy = Level.enemies[enemyIndex];
+    if (!enemy.defeated) { Draw.enemy(enemy.x, enemy.y, size, enemy.kind); }
   }
 };
 
@@ -115,13 +120,40 @@ Draw.ladder = function (x, y, size) {
   ctx.stroke();
 };
 
-Draw.enemy = function (x, y, size) {
+Draw.decor = function (x, y, size, kind) {
+  var ctx = Draw.ctx;
+  ctx.fillStyle = kind === "~" ? "#7a0000" : "#ff0000";
+  if (kind === "*") {
+    ctx.fillRect(x + 8, y + 20, 4, 12);
+    ctx.fillRect(x + 20, y + 12, 4, 20);
+    ctx.fillRect(x + 28, y + 24, 4, 8);
+  } else if (kind === "+") {
+    ctx.fillRect(x + 8, y + 12, 24, 6);
+    ctx.fillRect(x + 17, y + 4, 6, 28);
+  } else {
+    ctx.fillRect(x, y + 26, size, 6);
+    ctx.fillRect(x + 8, y + 18, 24, 8);
+  }
+};
+
+Draw.enemy = function (x, y, size, kind) {
   var ctx = Draw.ctx;
   ctx.fillStyle = "#ff0000";
-  ctx.fillRect(x + 6, y + 10, size - 12, size - 10);
+  if (kind === "B") {
+    ctx.beginPath();
+    ctx.moveTo(x + size / 2, y + 4);
+    ctx.lineTo(x + size - 2, y + size - 8);
+    ctx.lineTo(x + size / 2, y + size - 14);
+    ctx.lineTo(x + 2, y + size - 8);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    var inset = kind === "H" ? 2 : 6;
+    ctx.fillRect(x + inset, y + 6, size - inset * 2, size - 6);
+  }
   ctx.fillStyle = "#000000";
-  ctx.fillRect(x + 12, y + 18, 4, 4);
-  ctx.fillRect(x + size - 16, y + 18, 4, 4);
+  ctx.fillRect(x + 10, y + 14, 4, 4);
+  ctx.fillRect(x + size - 14, y + 14, 4, 4);
 };
 
 // The finish: a black pole with a flag on it.
@@ -153,6 +185,17 @@ Draw.player = function () {
   ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
   ctx.fill();
   ctx.stroke();
+
+  if (Player.isAttacking()) {
+    ctx.strokeStyle = "#ff0000";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    var attackStart = Player.facing > 0 ? centerX + r : centerX - r;
+    var attackEnd = Player.facing > 0 ? attackStart + 28 : attackStart - 28;
+    ctx.moveTo(attackStart, centerY - 10);
+    ctx.lineTo(attackEnd, centerY + 10);
+    ctx.stroke();
+  }
 
   // the off-center dot. its position depends on how far we have rolled.
   var dotX = centerX + Math.cos(Player.angle) * r * CONFIG.DOT_DISTANCE;

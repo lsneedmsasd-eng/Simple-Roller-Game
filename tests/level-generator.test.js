@@ -14,7 +14,7 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/level.js'), 'utf8
 const Level = sandbox.Level;
 Level.levels = [];
 
-const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'spikepit', 'enemy', 'finish', 'finishHigh']);
+const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'terrain', 'bridge', 'cave', 'decor', 'spikepit', 'enemy', 'runner', 'bat', 'brute', 'finish', 'finishHigh']);
 
 for (let run = 0; run < 20; run += 1) {
   const levelNumber = Level.generateRandom();
@@ -22,10 +22,10 @@ for (let run = 0; run < 20; run += 1) {
 
   assert.strictEqual(generated.pieces[0], 'start');
   assert.ok(['finish', 'finishHigh'].includes(generated.pieces[generated.pieces.length - 1]));
-  assert.ok(generated.pieces.length >= 10 && generated.pieces.length <= 16);
+  assert.ok(generated.pieces.length >= 10 && generated.pieces.length <= 17);
   assert.ok(generated.pieces.includes('ladder'));
   assert.ok(generated.pieces.includes('vertical'));
-  assert.ok(generated.pieces.includes('enemy'));
+  assert.ok(generated.pieces.some((pieceName) => ['enemy', 'runner', 'bat', 'brute'].includes(pieceName)));
   generated.pieces.forEach((pieceName) => assert.ok(validPieces.has(pieceName)));
 }
 

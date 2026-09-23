@@ -53,9 +53,13 @@ Collide.hitsLadder = function (x, y, width, height) {
 };
 
 Collide.hitsEnemy = function (x, y, width, height) {
-  var squares = Collide.squaresUnder(x, y, width, height);
-  for (var i = 0; i < squares.length; i++) {
-    if (Level.isEnemy(squares[i].col, squares[i].row)) { return true; }
+  for (var i = 0; i < Level.enemies.length; i++) {
+    var enemy = Level.enemies[i];
+    if (enemy.defeated) { continue; }
+    if (x < enemy.x + enemy.width && x + width > enemy.x &&
+        y < enemy.y + enemy.height && y + height > enemy.y) {
+      return true;
+    }
   }
   return false;
 };

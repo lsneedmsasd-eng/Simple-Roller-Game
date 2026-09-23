@@ -15,6 +15,8 @@ var Level = {
   grid: [],         // the finished world. grid[row][col] is one character
   cols: 0,          // how many columns wide the finished world is
   name: "",
+  enemies: [],      // moving enemies spawned from enemy tiles
+  enemyFrame: 0,
   startX: 0,        // where the player begins, in pixels
   startY: 0
 };
@@ -40,9 +42,9 @@ Level.loadData = function (whenDone) {
 };
 
 Level.generateRandom = function () {
-  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical"];
-  var challengePieces = ["gap", "spikes", "spikepit", "enemy"];
-  var pieces = ["start", "ladder"];
+  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor"];
+  var challengePieces = ["gap", "spikes", "spikepit", "enemy", "runner", "bat", "brute"];
+  var pieces = ["start", "decor", "ladder"];
   var previousWasChallenge = false;
   var middleCount = 6 + Math.floor(Math.random() * 5);
 
@@ -55,7 +57,8 @@ Level.generateRandom = function () {
 
   pieces.push("vertical");
   pieces.push("flat");
-  pieces.push("enemy");
+  var enemyPieces = ["enemy", "runner", "bat", "brute"];
+  pieces.push(enemyPieces[Math.floor(Math.random() * enemyPieces.length)]);
   var finishName = Level.levels.length % 2 === 0 ? "finishHigh" : "finish";
   pieces.push(finishName);
   Level.levels.push({
@@ -93,6 +96,74 @@ Level.build = function (levelNumber) {
   }
 
   Level.findStart();
+  Level.spawnEnemies();
+};
+
+Level.spawnEnemies = function () {
+  Level.enemies = [];
+  Level.enemyFrame = 0;
+  for (var row = 0; row < CONFIG.ROWS; row++) {
+    for (var col = 0; col < Level.cols; col++) {
+      var kind = Level.charAt(col, row);
+      if (!Level.isEnemyChar(kind)) { continue; }
+      var speed = 1.5;
+      if (kind === "M") { speed = 2.5; }
+      if (kind === "B") { speed = 2; }
+      if (kind === "H") { speed = 0.8; }
+      Level.enemies.push({
+        x: col * CONFIG.TILE + 4,
+        y: row * CONFIG.TILE + 8,
+        width: CONFIG.ENEMY_SIZE,
+        height: CONFIG.ENEMY_SIZE,
+        kind: kind,
+        speed: speed,
+        direction: -1,
+        baseY: row * CONFIG.TILE + 8,
+        phase: Level.enemies.length * 1.7,
+        defeated: false
+      });
+    }
+  }
+};
+
+Level.enemyHitsSolid = function (enemy, x, y) {
+  var left = Math.floor(x / CONFIG.TILE);
+  var right = Math.floor((x + enemy.width - 1) / CONFIG.TILE);
+  var bottom = Math.floor((y + enemy.height + 1) / CONFIG.TILE);
+  return Level.isSolid(left, bottom) || Level.isSolid(right, bottom);
+};
+
+Level.updateEnemies = function () {
+  Level.enemyFrame++;
+  for (var i = 0; i < Level.enemies.length; i++) {
+    var enemy = Level.enemies[i];
+    if (enemy.defeated) { continue; }
+    if (enemy.kind === "B") {
+      enemy.x = enemy.x + enemy.direction * enemy.speed;
+      enemy.y = enemy.baseY + Math.sin((Level.enemyFrame + enemy.phase) / 12) * 24;
+    } else {
+      var nextX = enemy.x + enemy.direction * enemy.speed;
+      var hasFloor = Level.enemyHitsSolid(enemy, nextX, enemy.y);
+      var ahead = Level.isSolid(Math.floor((nextX + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
+        Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE));
+      if (hasFloor || ahead) {
+        enemy.direction = enemy.direction * -1;
+      } else {
+        enemy.x = nextX;
+      }
+    }
+  }
+};
+
+Level.hitEnemies = function (x, y, width, height) {
+  for (var i = 0; i < Level.enemies.length; i++) {
+    var enemy = Level.enemies[i];
+    if (enemy.defeated) { continue; }
+    if (x < enemy.x + enemy.width && x + width > enemy.x &&
+        y < enemy.y + enemy.height && y + height > enemy.y) {
+      enemy.defeated = true;
+    }
+  }
 };
 
 // --- STEP 3: find the S and remember where it is ----------------------
@@ -122,7 +193,8 @@ Level.charAt = function (col, row) {
 Level.isSolid  = function (col, row) { return Level.charAt(col, row) === "#"; };
 Level.isSpike  = function (col, row) { return Level.charAt(col, row) === "^"; };
 Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };
-Level.isEnemy  = function (col, row) { return Level.charAt(col, row) === "E"; };
+Level.isEnemyChar = function (kind) { return ["E", "M", "B", "H"].indexOf(kind) >= 0; };
+Level.isEnemy  = function (col, row) { return Level.isEnemyChar(Level.charAt(col, row)); };
 Level.isFinish = function (col, row) { return Level.charAt(col, row) === "F"; };
 
 // How wide is the whole world, in pixels?

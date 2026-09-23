@@ -22,6 +22,10 @@ var CONFIG = {
   DASH_SPEED: 12,     // a burst of speed when the player dashes
   DASH_DURATION: 6,   // how many frames the burst lasts
   CLIMB_SPEED: 4,     // pixels per frame on a ladder
+  ATTACK_COOLDOWN: 18,
+  ATTACK_DURATION: 8,
+  ATTACK_RANGE: 44,
+  ENEMY_SIZE: 32,
   JUMP_POWER: 15,     // how hard the jump pushes UP. bigger = higher
   GRAVITY: 0.8,       // how hard the world pulls DOWN. bigger = heavier
   MAX_FALL: 16,       // fastest the player is allowed to fall
