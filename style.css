@@ -29,6 +29,10 @@ h1 {
   z-index: 2;
 }
 
+#menu-screen[hidden] {
+  display: none;
+}
+
 .menu-panel {
   border: 3px solid #ff3333;
   padding: 32px;
