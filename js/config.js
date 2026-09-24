@@ -14,8 +14,8 @@ var CONFIG = {
   PIECE_COLS: 8,      // how many columns wide every level piece is
 
   // --- the screen -----------------------------------------------------
-  CANVAS_W: 800,
-  CANVAS_H: 400,
+  CANVAS_W: 1000,
+  CANVAS_H: 560,
 
   // --- how the player moves -------------------------------------------
   MOVE_SPEED: 4,      // pixels per frame left and right

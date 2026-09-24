@@ -14,6 +14,7 @@ const sandbox = {
 
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/game.js'), 'utf8'), sandbox);
 const Game = sandbox.Game;
+Game.mode = 'playing';
 Game.completedLevels = 4;
 Game.coins = 0;
 Game.startRandomLevel = () => { Game.startedNextLevel = true; };

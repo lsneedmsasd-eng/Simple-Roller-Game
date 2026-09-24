@@ -27,10 +27,13 @@ Collide.squaresUnder = function (x, y, width, height) {
 };
 
 // Is this box inside a solid block?
-Collide.hitsSolid = function (x, y, width, height) {
+Collide.hitsSolid = function (x, y, width, height, previousY, verticalStep, ignorePlatforms) {
   var squares = Collide.squaresUnder(x, y, width, height);
   for (var i = 0; i < squares.length; i++) {
     if (Level.isSolid(squares[i].col, squares[i].row)) { return true; }
+    if (ignorePlatforms || verticalStep <= 0 || !Level.isPlatform(squares[i].col, squares[i].row)) { continue; }
+    var platformTop = squares[i].row * CONFIG.TILE;
+    if (previousY + height <= platformTop && y + height >= platformTop) { return true; }
   }
   return false;
 };

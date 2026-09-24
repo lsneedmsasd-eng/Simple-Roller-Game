@@ -65,6 +65,7 @@ Draw.world = function () {
       var y = row * size;
 
       if (here === "#") { Draw.block(x, y, size); }
+      if (here === "=") { Draw.platform(x, y, size); }
       if (here === "^") { Draw.spike(x, y, size); }
       if (here === "L") { Draw.ladder(x, y, size); }
       if (here === "*" || here === "+" || here === "~") { Draw.decor(x, y, size, here); }
@@ -97,6 +98,16 @@ Draw.block = function (x, y, size) {
                  y + CONFIG.LINE_WIDTH / 2,
                  size - CONFIG.LINE_WIDTH,
                  size - CONFIG.LINE_WIDTH);
+};
+
+Draw.platform = function (x, y, size) {
+  var ctx = Draw.ctx;
+  ctx.fillStyle = "#ff9900";
+  ctx.fillRect(x, y + size - 8, size, 8);
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = CONFIG.LINE_WIDTH;
+  ctx.strokeRect(x + CONFIG.LINE_WIDTH / 2, y + size - 8,
+    size - CONFIG.LINE_WIDTH, 8 - CONFIG.LINE_WIDTH / 2);
 };
 
 // A spike: a solid black triangle pointing up.

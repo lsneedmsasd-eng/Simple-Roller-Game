@@ -64,6 +64,7 @@ Each picture is 8 columns wide and 10 rows tall:
 - `#` is a solid block
 - `^` is a spike
 - `W` is water
+- `=` is a one-way platform. Jump up through it, or press DOWN while standing on it to drop through.
 - `S` is where the player starts
 - `F` is the finish
 - Some generated levels place the finish high up, so use a ladder to reach it.

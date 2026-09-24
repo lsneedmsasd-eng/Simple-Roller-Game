@@ -11,6 +11,20 @@
 Draw.setup();
 
 Level.loadData(function () {
-  Game.startLevel(CONFIG.START_LEVEL);
+  Game.setMenu("main-menu");
+  document.getElementById("start-button").addEventListener("click", Game.startNewGame);
+  document.getElementById("settings-button").addEventListener("click", function () {
+    Game.setMenu("settings-menu");
+  });
+  document.getElementById("controls-button").addEventListener("click", function () {
+    Game.setMenu("controls-menu");
+  });
+  var backButtons = document.querySelectorAll(".back-button");
+  for (var i = 0; i < backButtons.length; i++) {
+    backButtons[i].addEventListener("click", function () { Game.setMenu("main-menu"); });
+  }
+  document.getElementById("hard-mode").addEventListener("change", function (event) {
+    Game.settings.hardMode = event.target.checked;
+  });
   Game.loop();
 });

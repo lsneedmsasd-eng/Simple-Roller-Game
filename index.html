@@ -10,7 +10,27 @@
 
   <h1>ROLLER</h1>
 
-  <canvas id="game" width="800" height="400"></canvas>
+  <div id="menu-screen">
+    <section id="main-menu" class="menu-panel">
+      <p class="menu-kicker">ROLL THROUGH THE UNKNOWN</p>
+      <h1>ROLLER</h1>
+      <button id="start-button">START GAME</button>
+      <button id="settings-button">SETTINGS</button>
+      <button id="controls-button">CONTROLS</button>
+    </section>
+    <section id="settings-menu" class="menu-panel" hidden>
+      <h2>SETTINGS</h2>
+      <label><input id="hard-mode" type="checkbox"> Hard enemy speed</label>
+      <button class="back-button">BACK</button>
+    </section>
+    <section id="controls-menu" class="menu-panel" hidden>
+      <h2>CONTROLS</h2>
+      <p>ARROWS / A D: move<br>SPACE / UP: jump or climb<br>DOWN: climb or drop through platforms<br>SHIFT: dash<br>X / J: attack<br>R: restart</p>
+      <button class="back-button">BACK</button>
+    </section>
+  </div>
+
+  <canvas id="game" width="1000" height="560"></canvas>
 
   <p id="message">Loading...</p>
 

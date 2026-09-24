@@ -24,7 +24,8 @@ var Player = {
   jumpBonus: 0,
   maxOxygen: CONFIG.MAX_OXYGEN,
   oxygen: CONFIG.MAX_OXYGEN,
-  deathReason: ""
+  deathReason: "",
+  dropThroughFrames: 0
 };
 
 // Put the player back at the level's S square.
@@ -43,11 +44,13 @@ Player.reset = function () {
   Player.attackFrames = 0;
   Player.oxygen = Player.maxOxygen;
   Player.deathReason = "";
+  Player.dropThroughFrames = 0;
 };
 
 // Run one frame of player movement.
 Player.update = function () {
   var size = CONFIG.PLAYER_SIZE;
+  Player.dropThroughFrames = Math.max(0, Player.dropThroughFrames - 1);
 
   Player.attackCooldown = Math.max(0, Player.attackCooldown - 1);
   Player.attackFrames = Math.max(0, Player.attackFrames - 1);
@@ -86,6 +89,11 @@ Player.update = function () {
   var onLadder = Collide.hitsLadder(Player.x, Player.y, size, size);
   var climbing = onLadder && (Input.up || Input.down);
 
+  if (Input.down && Player.onGround && !onLadder) {
+    Player.dropThroughFrames = 8;
+    Player.onGround = false;
+  }
+
   if (climbing) {
     Player.vy = Input.up ? -CONFIG.CLIMB_SPEED : CONFIG.CLIMB_SPEED;
     Player.onGround = false;
@@ -121,7 +129,8 @@ Player.update = function () {
   Player.onGround = false;
 
   for (var j = 0; j < Math.abs(Player.vy); j++) {
-    if (Collide.hitsSolid(Player.x, Player.y + stepY, size, size)) {
+    if (Collide.hitsSolid(Player.x, Player.y + stepY, size, size, Player.y, stepY,
+      Player.dropThroughFrames > 0)) {
       if (stepY > 0) { Player.onGround = true; }  // we landed on something
       Player.vy = 0;
       break;

@@ -10,10 +10,34 @@
    ===================================================================== */
 
 var Game = {
-  mode: "playing",   // "playing", "dead", "won", or "shop"
+  mode: "menu",      // "menu", "playing", "dead", "won", or "shop"
   levelNumber: 0,
   completedLevels: 0,
-  coins: 0
+  coins: 0,
+  settings: { hardMode: false }
+};
+
+Game.setMenu = function (section) {
+  var menu = document.getElementById("menu-screen");
+  var sections = ["main-menu", "settings-menu", "controls-menu"];
+  for (var i = 0; i < sections.length; i++) {
+    document.getElementById(sections[i]).hidden = sections[i] !== section;
+  }
+  menu.hidden = false;
+  Game.mode = "menu";
+};
+
+Game.hideMenu = function () {
+  document.getElementById("menu-screen").hidden = true;
+};
+
+Game.startNewGame = function () {
+  Game.completedLevels = 0;
+  Game.coins = 0;
+  Player.speedBonus = 0;
+  Player.jumpBonus = 0;
+  Player.maxOxygen = CONFIG.MAX_OXYGEN;
+  Game.startLevel(CONFIG.START_LEVEL);
 };
 
 Game.startLevel = function (levelNumber) {
@@ -21,6 +45,7 @@ Game.startLevel = function (levelNumber) {
   Level.build(levelNumber);
   Player.reset();
   Game.mode = "playing";
+  Game.hideMenu();
   Game.showMessage("");
 };
 
@@ -60,6 +85,8 @@ Game.update = function () {
     Game.startLevel(Game.levelNumber);
     return;
   }
+
+  if (Game.mode === "menu") { return; }
 
   if (Game.mode === "shop") {
     if (Input.shopChoice) {

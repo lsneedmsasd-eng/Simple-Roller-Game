@@ -152,6 +152,7 @@ Level.spawnEnemies = function () {
       if (kind === "M") { speed = 2.5; }
       if (kind === "B") { speed = 1.8; }
       if (kind === "H") { speed = 0.8; }
+      if (typeof Game !== "undefined" && Game.settings && Game.settings.hardMode) { speed += 0.7; }
       Level.enemies.push({
         x: col * CONFIG.TILE + 4,
         y: (supportRow - 1) * CONFIG.TILE + 8,
@@ -254,6 +255,7 @@ Level.charAt = function (col, row) {
 };
 
 Level.isSolid  = function (col, row) { return Level.charAt(col, row) === "#"; };
+Level.isPlatform = function (col, row) { return Level.charAt(col, row) === "="; };
 Level.isSpike  = function (col, row) { return Level.charAt(col, row) === "^"; };
 Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };
 Level.isEnemyChar = function (kind) { return ["E", "M", "B", "H"].indexOf(kind) >= 0; };
