@@ -24,8 +24,8 @@ Level.levels = [{
 }];
 Level.build(0);
 
-assert.strictEqual(Level.collectibles.length, 8);
-assert.deepStrictEqual(Level.collectibles.map((item) => item.kind), ['C', 'C', 'G', 'G', 'G', 'G', 'K']);
+assert.strictEqual(Level.collectibles.length, 7);
+assert.deepStrictEqual(Array.from(Level.collectibles, (item) => item.kind).sort(), ['C', 'C', 'G', 'G', 'G', 'G', 'K']);
 
 const first = Level.collectibles[0];
 assert.strictEqual(Level.collectAt(first.x, first.y, first.width, first.height), 1);
