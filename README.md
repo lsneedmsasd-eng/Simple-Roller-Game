@@ -2,7 +2,7 @@
 
 A circle with an off-center dot rolls through a black and white world.
 It can move, jump, land on platforms, and die on spikes. It wins by
-touching the flag.
+touching the flag. Collect coins, gems, and keys along the way.
 
 That is the whole game. Everything else is yours to add.
 
@@ -64,6 +64,8 @@ Each picture is 8 columns wide and 10 rows tall:
 - `S` is where the player starts
 - `F` is the finish
 - Some generated levels place the finish high up, so use a ladder to reach it.
+- `C` is a coin, `G` is a gem, and `K` is a key. Collected items are shown in the counter at the top of the game.
+- Terrain pieces include rolling hills, marshes, bridges, vertical climbs, caves, and crystal rooms.
 
 To make a new level: change the list of names.
 To make a new piece: copy one, rename it, redraw the picture, then use

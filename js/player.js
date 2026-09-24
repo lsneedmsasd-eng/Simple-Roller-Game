@@ -128,6 +128,10 @@ Player.update = function () {
     var attackX = Player.facing > 0 ? Player.x + size : Player.x - CONFIG.ATTACK_RANGE;
     Level.hitEnemies(attackX, Player.y + 6, CONFIG.ATTACK_RANGE, size - 12);
   }
+
+  if (Level.collectAt) {
+    Level.collectAt(Player.x, Player.y, size, size);
+  }
 };
 
 Player.isAttacking = function () { return Player.attackFrames > 0; };

@@ -14,7 +14,7 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/level.js'), 'utf8
 const Level = sandbox.Level;
 Level.levels = [];
 
-const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'terrain', 'bridge', 'cave', 'decor', 'spikepit', 'enemy', 'runner', 'bat', 'brute', 'finish', 'finishHigh']);
+const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'terrain', 'bridge', 'cave', 'decor', 'spikepit', 'enemy', 'runner', 'bat', 'brute', 'coinTrail', 'gemTrail', 'keyRoom', 'rollingHills', 'marsh', 'crystalCave', 'finish', 'finishHigh']);
 
 for (let run = 0; run < 20; run += 1) {
   const levelNumber = Level.generateRandom();

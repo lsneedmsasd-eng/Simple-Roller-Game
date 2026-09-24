@@ -7,11 +7,13 @@
       "pieces": [
         "start",
         "flat",
+        "coinTrail",
         "gap",
         "flat",
         "spikes",
         "platform",
         "stairs",
+        "rollingHills",
         "finish"
       ]
     },
@@ -20,12 +22,41 @@
       "pieces": [
         "start",
         "spikes",
+        "gemTrail",
         "gap",
         "step",
         "spikepit",
         "platform",
         "gap",
         "flat",
+        "marsh",
+        "finish"
+      ]
+    },
+    {
+      "name": "Level 3 - Crystal Cavern",
+      "pieces": [
+        "start",
+        "crystalCave",
+        "ladder",
+        "cave",
+        "keyRoom",
+        "vertical",
+        "crystalCave",
+        "finishHigh"
+      ]
+    },
+    {
+      "name": "Level 4 - Rolling Marsh",
+      "pieces": [
+        "start",
+        "rollingHills",
+        "coinTrail",
+        "bridge",
+        "marsh",
+        "gap",
+        "stairs",
+        "gemTrail",
         "finish"
       ]
     }

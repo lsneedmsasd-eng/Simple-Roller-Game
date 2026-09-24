@@ -16,6 +16,8 @@ var Level = {
   cols: 0,          // how many columns wide the finished world is
   name: "",
   enemies: [],      // moving enemies spawned from enemy tiles
+  collectibles: [], // pickups spawned from collectible tiles
+  collected: 0,
   enemyFrame: 0,
   startX: 0,        // where the player begins, in pixels
   startY: 0
@@ -42,7 +44,7 @@ Level.loadData = function (whenDone) {
 };
 
 Level.generateRandom = function () {
-  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor"];
+  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom"];
   var challengePieces = ["gap", "spikes", "spikepit", "enemy", "runner", "bat", "brute"];
   var pieces = ["start", "decor", "ladder"];
   var previousWasChallenge = false;
@@ -97,6 +99,41 @@ Level.build = function (levelNumber) {
 
   Level.findStart();
   Level.spawnEnemies();
+  Level.spawnCollectibles();
+};
+
+Level.spawnCollectibles = function () {
+  Level.collectibles = [];
+  Level.collected = 0;
+  for (var row = 0; row < CONFIG.ROWS; row++) {
+    for (var col = 0; col < Level.cols; col++) {
+      var kind = Level.charAt(col, row);
+      if (!Level.isCollectibleChar(kind)) { continue; }
+      Level.collectibles.push({
+        x: col * CONFIG.TILE + CONFIG.TILE / 2 - CONFIG.COLLECTIBLE_SIZE / 2,
+        y: row * CONFIG.TILE + CONFIG.TILE / 2 - CONFIG.COLLECTIBLE_SIZE / 2,
+        width: CONFIG.COLLECTIBLE_SIZE,
+        height: CONFIG.COLLECTIBLE_SIZE,
+        kind: kind,
+        collected: false
+      });
+    }
+  }
+};
+
+Level.collectAt = function (x, y, width, height) {
+  var collectedNow = 0;
+  for (var i = 0; i < Level.collectibles.length; i++) {
+    var collectible = Level.collectibles[i];
+    if (collectible.collected) { continue; }
+    if (x < collectible.x + collectible.width && x + width > collectible.x &&
+        y < collectible.y + collectible.height && y + height > collectible.y) {
+      collectible.collected = true;
+      collectedNow++;
+    }
+  }
+  Level.collected += collectedNow;
+  return collectedNow;
 };
 
 Level.spawnEnemies = function () {
@@ -207,6 +244,7 @@ Level.isSpike  = function (col, row) { return Level.charAt(col, row) === "^"; };
 Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };
 Level.isEnemyChar = function (kind) { return ["E", "M", "B", "H"].indexOf(kind) >= 0; };
 Level.isEnemy  = function (col, row) { return Level.isEnemyChar(Level.charAt(col, row)); };
+Level.isCollectibleChar = function (kind) { return ["C", "G", "K"].indexOf(kind) >= 0; };
 Level.isFinish = function (col, row) { return Level.charAt(col, row) === "F"; };
 
 // How wide is the whole world, in pixels?

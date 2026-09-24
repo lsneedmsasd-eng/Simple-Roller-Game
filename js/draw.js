@@ -46,6 +46,7 @@ Draw.everything = function () {
   Draw.player();
 
   ctx.restore();
+  Draw.hud();
 };
 
 // Draw every grid square that is currently on screen.
@@ -74,6 +75,13 @@ Draw.world = function () {
   for (var enemyIndex = 0; enemyIndex < Level.enemies.length; enemyIndex++) {
     var enemy = Level.enemies[enemyIndex];
     if (!enemy.defeated) { Draw.enemy(enemy.x, enemy.y, size, enemy.kind); }
+  }
+
+  for (var collectibleIndex = 0; collectibleIndex < Level.collectibles.length; collectibleIndex++) {
+    var collectible = Level.collectibles[collectibleIndex];
+    if (!collectible.collected) {
+      Draw.collectible(collectible.x, collectible.y, collectible.width, collectible.kind);
+    }
   }
 };
 
@@ -154,6 +162,41 @@ Draw.enemy = function (x, y, size, kind) {
   ctx.fillStyle = "#000000";
   ctx.fillRect(x + 10, y + 14, 4, 4);
   ctx.fillRect(x + size - 14, y + 14, 4, 4);
+};
+
+Draw.collectible = function (x, y, size, kind) {
+  var ctx = Draw.ctx;
+  ctx.fillStyle = kind === "G" ? "#00ffff" : kind === "K" ? "#ffff00" : "#ffffff";
+  ctx.strokeStyle = "#ff0000";
+  ctx.lineWidth = 3;
+  if (kind === "G") {
+    ctx.beginPath();
+    ctx.moveTo(x + size / 2, y);
+    ctx.lineTo(x + size, y + size / 2);
+    ctx.lineTo(x + size / 2, y + size);
+    ctx.lineTo(x, y + size / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  } else if (kind === "K") {
+    ctx.beginPath();
+    ctx.arc(x + size / 2 - 3, y + size / 2, size / 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillRect(x + size / 2, y + size / 2 - 2, size / 2, 4);
+    ctx.fillRect(x + size - 5, y + size / 2 + 2, 4, 6);
+  } else {
+    ctx.beginPath();
+    ctx.arc(x + size / 2, y + size / 2, size / 2 - 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+};
+
+Draw.hud = function () {
+  var ctx = Draw.ctx;
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "16px monospace";
+  ctx.fillText("COLLECTED " + Level.collected + "/" + Level.collectibles.length, 12, 24);
 };
 
 // The finish: a black pole with a flag on it.
