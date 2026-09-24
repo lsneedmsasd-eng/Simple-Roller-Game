@@ -52,6 +52,14 @@ Collide.hitsLadder = function (x, y, width, height) {
   return false;
 };
 
+Collide.hitsWater = function (x, y, width, height) {
+  var squares = Collide.squaresUnder(x, y, width, height);
+  for (var i = 0; i < squares.length; i++) {
+    if (Level.isWater(squares[i].col, squares[i].row)) { return true; }
+  }
+  return false;
+};
+
 Collide.hitsEnemy = function (x, y, width, height) {
   for (var i = 0; i < Level.enemies.length; i++) {
     var enemy = Level.enemies[i];

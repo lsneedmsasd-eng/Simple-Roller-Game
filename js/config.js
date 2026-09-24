@@ -27,6 +27,10 @@ var CONFIG = {
   ATTACK_RANGE: 44,
   ENEMY_SIZE: 32,
   COLLECTIBLE_SIZE: 22,
+  MAX_OXYGEN: 600,
+  OXYGEN_DRAIN: 1,
+  OXYGEN_RECOVERY: 3,
+  WATER_GRAVITY: 0.35,
   JUMP_POWER: 15,     // how hard the jump pushes UP. bigger = higher
   GRAVITY: 0.8,       // how hard the world pulls DOWN. bigger = heavier
   MAX_FALL: 16,       // fastest the player is allowed to fall

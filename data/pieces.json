@@ -1,5 +1,5 @@
 {
-  "_comment": "Every piece is 8 columns wide and 10 rows tall. Draw it like a picture. '.' is empty air, '#' is a solid block, '^' is a spike, 'L' is a ladder, 'E' is an enemy, 'S' is where the player starts, 'F' is the finish. To invent a new piece, copy one of these, rename it, and change the picture. Then use its name in data/levels.json.",
+  "_comment": "Every piece is 8 columns wide and 10 rows tall. Draw it like a picture. '.' is empty air, '#' is a solid block, '^' is a spike, 'L' is a ladder, 'W' is water, 'E' is an enemy, 'S' is where the player starts, 'F' is the finish. To invent a new piece, copy one of these, rename it, and change the picture. Then use its name in data/levels.json.",
 
   "start": [
     "........",
@@ -296,6 +296,19 @@
     "........",
     "..~~....",
     "..~~....",
+    "########",
+    "########"
+  ],
+
+  "water": [
+    "........",
+    "........",
+    "........",
+    "..WWWW..",
+    "..WWWW..",
+    "..WWWW..",
+    "..WWWW..",
+    "........",
     "########",
     "########"
   ],

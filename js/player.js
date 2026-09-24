@@ -19,7 +19,12 @@ var Player = {
   dashDirection: 0, // direction of the current dash
   facing: 1,
   attackCooldown: 0,
-  attackFrames: 0
+  attackFrames: 0,
+  speedBonus: 0,
+  jumpBonus: 0,
+  maxOxygen: CONFIG.MAX_OXYGEN,
+  oxygen: CONFIG.MAX_OXYGEN,
+  deathReason: ""
 };
 
 // Put the player back at the level's S square.
@@ -36,6 +41,8 @@ Player.reset = function () {
   Player.facing = 1;
   Player.attackCooldown = 0;
   Player.attackFrames = 0;
+  Player.oxygen = Player.maxOxygen;
+  Player.deathReason = "";
 };
 
 // Run one frame of player movement.
@@ -71,8 +78,8 @@ Player.update = function () {
   }
 
   if (Player.vx === 0) {
-    if (Input.left)  { Player.vx = -CONFIG.MOVE_SPEED; }
-    if (Input.right) { Player.vx =  CONFIG.MOVE_SPEED; }
+    if (Input.left)  { Player.vx = -(CONFIG.MOVE_SPEED + Player.speedBonus); }
+    if (Input.right) { Player.vx = CONFIG.MOVE_SPEED + Player.speedBonus; }
   }
 
   // --- 2. jump, but only if we are standing on something --------------
@@ -83,9 +90,10 @@ Player.update = function () {
     Player.vy = Input.up ? -CONFIG.CLIMB_SPEED : CONFIG.CLIMB_SPEED;
     Player.onGround = false;
   } else if (Input.jump && Player.onGround) {
-    Player.vy = -CONFIG.JUMP_POWER;   // negative is UP
+    Player.vy = -(CONFIG.JUMP_POWER + Player.jumpBonus);   // negative is UP
     Player.onGround = false;
-    Player.vy = Player.vy + CONFIG.GRAVITY;
+    var inWaterBeforeMove = Collide.hitsWater && Collide.hitsWater(Player.x, Player.y, size, size);
+    Player.vy = Player.vy + (inWaterBeforeMove ? CONFIG.WATER_GRAVITY : CONFIG.GRAVITY);
   } else if (onLadder) {
     Player.vy = 0;
   } else {
@@ -132,6 +140,12 @@ Player.update = function () {
   if (Level.collectAt) {
     Level.collectAt(Player.x, Player.y, size, size);
   }
+
+  if (Collide.hitsWater && Collide.hitsWater(Player.x, Player.y, size, size)) {
+    Player.oxygen = Math.max(0, Player.oxygen - CONFIG.OXYGEN_DRAIN);
+  } else {
+    Player.oxygen = Math.min(Player.maxOxygen, Player.oxygen + CONFIG.OXYGEN_RECOVERY);
+  }
 };
 
 Player.isAttacking = function () { return Player.attackFrames > 0; };
@@ -139,9 +153,10 @@ Player.isAttacking = function () { return Player.attackFrames > 0; };
 // Did the player just touch something deadly?
 Player.isDead = function () {
   var size = CONFIG.PLAYER_SIZE;
-  if (Collide.hitsSpike(Player.x, Player.y, size, size)) { return true; }
-  if (Collide.hitsEnemy(Player.x, Player.y, size, size)) { return true; }
-  if (Player.y > CONFIG.CANVAS_H + 200) { return true; }   // fell off the world
+  if (Collide.hitsSpike(Player.x, Player.y, size, size)) { Player.deathReason = "spike"; return true; }
+  if (Collide.hitsEnemy(Player.x, Player.y, size, size)) { Player.deathReason = "enemy"; return true; }
+  if (Player.oxygen <= 0) { Player.deathReason = "oxygen"; return true; }
+  if (Player.y > CONFIG.CANVAS_H + 200) { Player.deathReason = "fall"; return true; }
   return false;
 };
 

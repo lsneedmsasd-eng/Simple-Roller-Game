@@ -14,7 +14,9 @@ var Input = {
   jump: false,
   dash: false,
   attack: false,
-  restart: false
+  restart: false,
+  shopChoice: 0,
+  shopContinue: false
 };
 
 // Called whenever a key goes DOWN.
@@ -42,4 +44,8 @@ function setKey(key, isDown) {
   if (key === "ArrowUp"    || key === " " || key === "w" || key === "W") { Input.jump = isDown; }
   if (key === "x" || key === "X" || key === "j" || key === "J") { Input.attack = isDown; }
   if (key === "r" || key === "R") { Input.restart = isDown; }
+  if (isDown && key === "1") { Input.shopChoice = 1; }
+  if (isDown && key === "2") { Input.shopChoice = 2; }
+  if (isDown && key === "3") { Input.shopChoice = 3; }
+  if (key === "Enter" || key === "0") { Input.shopContinue = isDown; }
 }

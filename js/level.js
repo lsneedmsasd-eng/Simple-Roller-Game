@@ -44,7 +44,7 @@ Level.loadData = function (whenDone) {
 };
 
 Level.generateRandom = function () {
-  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom"];
+  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom", "water"];
   var challengePieces = ["gap", "spikes", "spikepit", "enemy", "runner", "bat", "brute"];
   var pieces = ["start", "decor", "ladder"];
   var previousWasChallenge = false;
@@ -192,11 +192,25 @@ Level.updateEnemies = function () {
   for (var i = 0; i < Level.enemies.length; i++) {
     var enemy = Level.enemies[i];
     if (enemy.defeated) { continue; }
+
+    if (enemy.kind === "B") {
+      enemy.x = enemy.x + enemy.direction * enemy.speed;
+      enemy.y = enemy.baseY + Math.sin((Level.enemyFrame + enemy.phase) / 12) * 18;
+      if (enemy.x < 0 || enemy.x + enemy.width > Level.pixelWidth() ||
+          Level.isSolid(Math.floor((enemy.x + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
+            Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE))) {
+        enemy.direction = enemy.direction * -1;
+        enemy.x = enemy.x + enemy.direction * enemy.speed * 2;
+      }
+      continue;
+    }
+
     var nextX = enemy.x + enemy.direction * enemy.speed;
     var hasFloor = Level.enemyHitsSolid(enemy, nextX, enemy.y);
     var ahead = Level.isSolid(Math.floor((nextX + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
       Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE));
-    if (hasFloor || ahead || Level.enemyOverlaps(enemy, nextX, enemy.y)) {
+    if (nextX < 0 || nextX + enemy.width > Level.pixelWidth() ||
+      !hasFloor || ahead || Level.enemyOverlaps(enemy, nextX, enemy.y)) {
       enemy.direction = enemy.direction * -1;
     } else {
       enemy.x = nextX;
@@ -245,6 +259,7 @@ Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };
 Level.isEnemyChar = function (kind) { return ["E", "M", "B", "H"].indexOf(kind) >= 0; };
 Level.isEnemy  = function (col, row) { return Level.isEnemyChar(Level.charAt(col, row)); };
 Level.isCollectibleChar = function (kind) { return ["C", "G", "K"].indexOf(kind) >= 0; };
+Level.isWater = function (col, row) { return Level.charAt(col, row) === "W"; };
 Level.isFinish = function (col, row) { return Level.charAt(col, row) === "F"; };
 
 // How wide is the whole world, in pixels?

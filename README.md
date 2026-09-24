@@ -16,6 +16,8 @@ Press `Ctrl + Shift + R` to hard refresh, or you will see the old version.
 - SPACE or UP arrow - jump
 - UP/W and DOWN/S - climb ladders
 - X/J - melee attack
+- Water drains oxygen; leave it before the oxygen bar empties.
+- Every fifth completed level opens a shop. Press 1, 2, or 3 to buy an upgrade, then ENTER to continue.
 - R - restart the level
 
 Enemies have different movement patterns: walkers patrol platforms, runners move faster, brutes are larger, and bats fly. Press X or J to defeat them at close range.
@@ -61,6 +63,7 @@ Each picture is 8 columns wide and 10 rows tall:
 - `.` is empty air
 - `#` is a solid block
 - `^` is a spike
+- `W` is water
 - `S` is where the player starts
 - `F` is the finish
 - Some generated levels place the finish high up, so use a ladder to reach it.

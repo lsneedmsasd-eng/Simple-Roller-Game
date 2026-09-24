@@ -68,6 +68,7 @@ Draw.world = function () {
       if (here === "^") { Draw.spike(x, y, size); }
       if (here === "L") { Draw.ladder(x, y, size); }
       if (here === "*" || here === "+" || here === "~") { Draw.decor(x, y, size, here); }
+      if (here === "W") { Draw.water(x, y, size); }
       if (here === "F") { Draw.finish(x, y, size); }
     }
   }
@@ -144,6 +145,19 @@ Draw.decor = function (x, y, size, kind) {
   }
 };
 
+Draw.water = function (x, y, size) {
+  var ctx = Draw.ctx;
+  ctx.fillStyle = "#0066ff";
+  ctx.fillRect(x, y + 8, size, size - 8);
+  ctx.strokeStyle = "#66ccff";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x + 4, y + 16);
+  ctx.quadraticCurveTo(x + size / 4, y + 10, x + size / 2, y + 16);
+  ctx.quadraticCurveTo(x + size * 3 / 4, y + 22, x + size - 4, y + 16);
+  ctx.stroke();
+};
+
 Draw.enemy = function (x, y, size, kind) {
   var ctx = Draw.ctx;
   ctx.fillStyle = "#ff0000";
@@ -196,7 +210,24 @@ Draw.hud = function () {
   var ctx = Draw.ctx;
   ctx.fillStyle = "#ffffff";
   ctx.font = "16px monospace";
-  ctx.fillText("COLLECTED " + Level.collected + "/" + Level.collectibles.length, 12, 24);
+  ctx.fillText("COLLECTED " + Level.collected + "/" + Level.collectibles.length + "   COINS " + Game.coins, 12, 24);
+  var oxygenWidth = 140 * Player.oxygen / Player.maxOxygen;
+  ctx.strokeStyle = "#ffffff";
+  ctx.strokeRect(CONFIG.CANVAS_W - 164, 10, 150, 14);
+  ctx.fillStyle = Player.oxygen < Player.maxOxygen * 0.25 ? "#ff3333" : "#00ccff";
+  ctx.fillRect(CONFIG.CANVAS_W - 162, 12, oxygenWidth, 10);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText("O2", CONFIG.CANVAS_W - 194, 23);
+  if (Game.mode === "shop") {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+    ctx.fillRect(120, 80, 560, 240);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "22px monospace";
+    ctx.fillText("SHOP - COINS " + Game.coins, 180, 125);
+    ctx.font = "16px monospace";
+    ctx.fillText("1: Air Tank (3)   2: Speed (5)   3: Jump (5)", 155, 175);
+    ctx.fillText("Press ENTER to continue", 235, 225);
+  }
 };
 
 // The finish: a black pole with a flag on it.

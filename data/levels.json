@@ -8,6 +8,7 @@
         "start",
         "flat",
         "coinTrail",
+        "water",
         "gap",
         "flat",
         "spikes",
@@ -23,6 +24,7 @@
         "start",
         "spikes",
         "gemTrail",
+        "water",
         "gap",
         "step",
         "spikepit",
@@ -42,6 +44,7 @@
         "cave",
         "keyRoom",
         "vertical",
+        "water",
         "crystalCave",
         "finishHigh"
       ]
@@ -54,6 +57,7 @@
         "coinTrail",
         "bridge",
         "marsh",
+        "water",
         "gap",
         "stairs",
         "gemTrail",
