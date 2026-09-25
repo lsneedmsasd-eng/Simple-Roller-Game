@@ -48,12 +48,13 @@ Player.reset = function () {
 };
 
 // Run one frame of player movement.
-Player.update = function () {
+Player.update = function (deltaFrames) {
+  deltaFrames = deltaFrames === undefined ? 1 : deltaFrames;
   var size = CONFIG.PLAYER_SIZE;
-  Player.dropThroughFrames = Math.max(0, Player.dropThroughFrames - 1);
+  Player.dropThroughFrames = Math.max(0, Player.dropThroughFrames - deltaFrames);
 
-  Player.attackCooldown = Math.max(0, Player.attackCooldown - 1);
-  Player.attackFrames = Math.max(0, Player.attackFrames - 1);
+  Player.attackCooldown = Math.max(0, Player.attackCooldown - deltaFrames);
+  Player.attackFrames = Math.max(0, Player.attackFrames - deltaFrames);
   if (Input.left) { Player.facing = -1; }
   if (Input.right) { Player.facing = 1; }
   if (Input.attack && Player.attackCooldown === 0) {
@@ -62,27 +63,27 @@ Player.update = function () {
   }
 
   // --- 1. decide how fast to go sideways ------------------------------
-  Player.dashCooldown = Math.max(0, Player.dashCooldown - 1);
-  Player.dashFrames = Math.max(0, Player.dashFrames - 1);
+  Player.dashCooldown = Math.max(0, Player.dashCooldown - deltaFrames);
+  Player.dashFrames = Math.max(0, Player.dashFrames - deltaFrames);
   Player.vx = 0;
 
   if (Player.dashFrames > 0) {
-    Player.vx = Player.dashDirection * CONFIG.DASH_SPEED;
+    Player.vx = Player.dashDirection * CONFIG.DASH_SPEED * deltaFrames;
   } else if (Input.dash && Player.dashCooldown === 0) {
     var requestedDirection = 0;
     if (Input.left)  { requestedDirection = -1; }
     if (Input.right) { requestedDirection = 1; }
     if (requestedDirection !== 0) {
       Player.dashDirection = requestedDirection;
-      Player.vx = requestedDirection * CONFIG.DASH_SPEED;
+      Player.vx = requestedDirection * CONFIG.DASH_SPEED * deltaFrames;
       Player.dashFrames = CONFIG.DASH_DURATION;
       Player.dashCooldown = CONFIG.DASH_COOLDOWN;
     }
   }
 
   if (Player.vx === 0) {
-    if (Input.left)  { Player.vx = -(CONFIG.MOVE_SPEED + Player.speedBonus); }
-    if (Input.right) { Player.vx = CONFIG.MOVE_SPEED + Player.speedBonus; }
+    if (Input.left)  { Player.vx = -(CONFIG.MOVE_SPEED + Player.speedBonus) * deltaFrames; }
+    if (Input.right) { Player.vx = (CONFIG.MOVE_SPEED + Player.speedBonus) * deltaFrames; }
   }
 
   // --- 2. jump, but only if we are standing on something --------------
@@ -95,19 +96,19 @@ Player.update = function () {
   }
 
   if (climbing) {
-    Player.vy = Input.up ? -CONFIG.CLIMB_SPEED : CONFIG.CLIMB_SPEED;
+    Player.vy = (Input.up ? -CONFIG.CLIMB_SPEED : CONFIG.CLIMB_SPEED) * deltaFrames;
     Player.onGround = false;
   } else if (Input.jump && Player.onGround) {
     Player.vy = -(CONFIG.JUMP_POWER + Player.jumpBonus);   // negative is UP
     Player.onGround = false;
     var inWaterBeforeMove = Collide.hitsWater && Collide.hitsWater(Player.x, Player.y, size, size);
-    Player.vy = Player.vy + (inWaterBeforeMove ? CONFIG.WATER_GRAVITY : CONFIG.GRAVITY);
+    Player.vy = Player.vy + (inWaterBeforeMove ? CONFIG.WATER_GRAVITY : CONFIG.GRAVITY) * deltaFrames;
   } else if (onLadder) {
     Player.vy = 0;
   } else {
     // --- 3. gravity pulls down every single frame ---------------------
-    Player.vy = Player.vy + CONFIG.GRAVITY;
-    if (Player.vy > CONFIG.MAX_FALL) { Player.vy = CONFIG.MAX_FALL; }
+    Player.vy = Player.vy + CONFIG.GRAVITY * deltaFrames;
+    if (Player.vy > CONFIG.MAX_FALL * deltaFrames) { Player.vy = CONFIG.MAX_FALL * deltaFrames; }
   }
 
   // --- 4. move sideways, one pixel at a time, stopping at walls -------
@@ -115,10 +116,13 @@ Player.update = function () {
   if (Player.vx > 0) { stepX = 1; }
   if (Player.vx < 0) { stepX = -1; }
 
-  for (var i = 0; i < Math.abs(Player.vx); i++) {
-    if (Collide.hitsSolid(Player.x + stepX, Player.y, size, size)) { break; }
-    Player.x = Player.x + stepX;
-    Player.angle = Player.angle + stepX / CONFIG.PLAYER_RADIUS; // roll it
+  var remainingX = Math.abs(Player.vx);
+  while (remainingX > 0) {
+    var moveX = Math.min(1, remainingX) * stepX;
+    if (Collide.hitsSolid(Player.x + moveX, Player.y, size, size)) { break; }
+    Player.x = Player.x + moveX;
+    Player.angle = Player.angle + moveX / CONFIG.PLAYER_RADIUS; // roll it
+    remainingX -= Math.abs(moveX);
   }
 
   // --- 5. move up or down, one pixel at a time ------------------------
@@ -128,14 +132,17 @@ Player.update = function () {
 
   Player.onGround = false;
 
-  for (var j = 0; j < Math.abs(Player.vy); j++) {
-    if (Collide.hitsSolid(Player.x, Player.y + stepY, size, size, Player.y, stepY,
+  var remainingY = Math.abs(Player.vy);
+  while (remainingY > 0) {
+    var moveY = Math.min(1, remainingY) * stepY;
+    if (Collide.hitsSolid(Player.x, Player.y + moveY, size, size, Player.y, stepY,
       Player.dropThroughFrames > 0)) {
       if (stepY > 0) { Player.onGround = true; }  // we landed on something
       Player.vy = 0;
       break;
     }
-    Player.y = Player.y + stepY;
+    Player.y = Player.y + moveY;
+    remainingY -= Math.abs(moveY);
   }
 
   // --- 6. keep the player inside the left edge of the world -----------
@@ -151,9 +158,9 @@ Player.update = function () {
   }
 
   if (Collide.hitsWater && Collide.hitsWater(Player.x, Player.y, size, size)) {
-    Player.oxygen = Math.max(0, Player.oxygen - CONFIG.OXYGEN_DRAIN);
+    Player.oxygen = Math.max(0, Player.oxygen - CONFIG.OXYGEN_DRAIN * deltaFrames);
   } else {
-    Player.oxygen = Math.min(Player.maxOxygen, Player.oxygen + CONFIG.OXYGEN_RECOVERY);
+    Player.oxygen = Math.min(Player.maxOxygen, Player.oxygen + CONFIG.OXYGEN_RECOVERY * deltaFrames);
   }
 };
 

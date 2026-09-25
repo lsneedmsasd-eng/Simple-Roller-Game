@@ -65,7 +65,8 @@ Level.generateRandom = function () {
   pieces.push(finishName);
   Level.levels.push({
     name: "Random Run " + (Level.levels.length - 1),
-    pieces: pieces
+    pieces: pieces,
+    procedural: true
   });
   return Level.levels.length - 1;
 };
@@ -97,9 +98,60 @@ Level.build = function (levelNumber) {
     }
   }
 
+  if (level.procedural) { Level.randomizeWorld(); }
+
   Level.findStart();
   Level.spawnEnemies();
   Level.spawnCollectibles();
+};
+
+// Give generated levels a new silhouette and a different set of landmarks.
+// The hand-authored levels remain exactly as designed in pieces.json.
+Level.randomizeWorld = function () {
+  var floorRow = 8;
+  var nextFloor = 7 + Math.floor(Math.random() * 3);
+  var protectedColumns = {};
+
+  for (var row = 0; row < CONFIG.ROWS; row++) {
+    for (var col = 0; col < Level.cols; col++) {
+      if (Level.charAt(col, row) === "S" || Level.charAt(col, row) === "F") {
+        protectedColumns[col] = true;
+      }
+    }
+  }
+
+  // A random walk creates flats, ramps, hills, ledges, and occasional pits.
+  for (var column = 0; column < Level.cols; column++) {
+    var isGap = !protectedColumns[column] && Math.random() < 0.06;
+    if (!protectedColumns[column] && Math.random() < 0.18) {
+      nextFloor += Math.floor(Math.random() * 3) - 1;
+    }
+    nextFloor = Math.max(5, Math.min(floorRow, nextFloor));
+    if (protectedColumns[column]) { nextFloor = floorRow; }
+
+    for (var groundRow = floorRow; groundRow < CONFIG.ROWS; groundRow++) {
+      Level.grid[groundRow] = Level.grid[groundRow].substring(0, column) +
+        (groundRow >= nextFloor && !isGap ? "#" : ".") + Level.grid[groundRow].substring(column + 1);
+    }
+  }
+
+  // Add sparse, different landmarks to empty air without replacing gameplay tiles.
+  for (var landmarkColumn = 3; landmarkColumn < Level.cols - 3; landmarkColumn += 2 + Math.floor(Math.random() * 5)) {
+    if (protectedColumns[landmarkColumn] || Math.random() < 0.35) { continue; }
+    var landmarkHeight = 1 + Math.floor(Math.random() * 3);
+    var topRow = 7 - landmarkHeight;
+    if (Level.charAt(landmarkColumn, topRow) !== ".") { continue; }
+    for (var landmarkRow = topRow; landmarkRow < 7; landmarkRow++) {
+      if (Level.charAt(landmarkColumn, landmarkRow) === ".") {
+        Level.grid[landmarkRow] = Level.grid[landmarkRow].substring(0, landmarkColumn) + "#" +
+          Level.grid[landmarkRow].substring(landmarkColumn + 1);
+      }
+    }
+    if (Math.random() < 0.5 && Level.charAt(landmarkColumn + 1, topRow) === ".") {
+      Level.grid[topRow] = Level.grid[topRow].substring(0, landmarkColumn + 1) + "=" +
+        Level.grid[topRow].substring(landmarkColumn + 2);
+    }
+  }
 };
 
 Level.spawnCollectibles = function () {
@@ -188,25 +240,26 @@ Level.enemyOverlaps = function (enemy, x, y) {
   return false;
 };
 
-Level.updateEnemies = function () {
-  Level.enemyFrame++;
+Level.updateEnemies = function (deltaFrames) {
+  deltaFrames = deltaFrames === undefined ? 1 : deltaFrames;
+  Level.enemyFrame += deltaFrames;
   for (var i = 0; i < Level.enemies.length; i++) {
     var enemy = Level.enemies[i];
     if (enemy.defeated) { continue; }
 
     if (enemy.kind === "B") {
-      enemy.x = enemy.x + enemy.direction * enemy.speed;
+      enemy.x = enemy.x + enemy.direction * enemy.speed * deltaFrames;
       enemy.y = enemy.baseY + Math.sin((Level.enemyFrame + enemy.phase) / 12) * 18;
       if (enemy.x < 0 || enemy.x + enemy.width > Level.pixelWidth() ||
           Level.isSolid(Math.floor((enemy.x + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
             Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE))) {
         enemy.direction = enemy.direction * -1;
-        enemy.x = enemy.x + enemy.direction * enemy.speed * 2;
+        enemy.x = enemy.x + enemy.direction * enemy.speed * deltaFrames * 2;
       }
       continue;
     }
 
-    var nextX = enemy.x + enemy.direction * enemy.speed;
+    var nextX = enemy.x + enemy.direction * enemy.speed * deltaFrames;
     var hasFloor = Level.enemyHitsSolid(enemy, nextX, enemy.y);
     var ahead = Level.isSolid(Math.floor((nextX + (enemy.direction > 0 ? enemy.width : 0)) / CONFIG.TILE),
       Math.floor((enemy.y + enemy.height / 2) / CONFIG.TILE));

@@ -14,7 +14,8 @@ var Game = {
   levelNumber: 0,
   completedLevels: 0,
   coins: 0,
-  settings: { hardMode: false }
+  settings: { hardMode: false },
+  lastTime: 0
 };
 
 Game.setMenu = function (section) {
@@ -100,8 +101,9 @@ Game.update = function () {
   // If we are not playing, nothing moves. We just wait for R.
   if (Game.mode !== "playing") { return; }
 
-  Level.updateEnemies();
-  Player.update();
+  var deltaFrames = arguments.length > 0 ? arguments[0] : 1;
+  Level.updateEnemies(deltaFrames);
+  Player.update(deltaFrames);
 
   if (Player.isDead()) {
     Game.mode = "dead";
@@ -123,8 +125,11 @@ Game.update = function () {
 };
 
 // --- THE LOOP ITSELF --------------------------------------------------
-Game.loop = function () {
-  Game.update();
+Game.loop = function (time) {
+  if (!Game.lastTime) { Game.lastTime = time; }
+  var deltaFrames = Math.min(3, Math.max(0, (time - Game.lastTime) / (1000 / 60)));
+  Game.lastTime = time;
+  Game.update(deltaFrames);
   Draw.updateCamera();
   Draw.everything();
   window.requestAnimationFrame(Game.loop);
