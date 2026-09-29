@@ -14,7 +14,7 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/level.js'), 'utf8
 const Level = sandbox.Level;
 Level.levels = [];
 
-const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'terrain', 'bridge', 'cave', 'decor', 'spikepit', 'enemy', 'runner', 'bat', 'brute', 'coinTrail', 'gemTrail', 'keyRoom', 'rollingHills', 'marsh', 'water', 'crystalCave', 'finish', 'finishHigh']);
+const validPieces = new Set(['start', 'flat', 'gap', 'spikes', 'step', 'platform', 'stairs', 'ladder', 'vertical', 'terrain', 'bridge', 'cave', 'decor', 'spikepit', 'enemy', 'runner', 'bat', 'brute', 'bossRoom', 'coinTrail', 'gemTrail', 'keyRoom', 'rollingHills', 'marsh', 'water', 'crystalCave', 'finish', 'finishHigh']);
 
 for (let run = 0; run < 20; run += 1) {
   const levelNumber = Level.generateRandom();
@@ -30,3 +30,9 @@ for (let run = 0; run < 20; run += 1) {
 }
 
 console.log('random level generator test passed');
+
+const bossLevelNumber = Level.generateRandom(10);
+assert.ok(Level.levels[bossLevelNumber].pieces.includes('bossRoom'));
+assert.strictEqual(Level.levels[bossLevelNumber].name, 'Boss Room - Level 10');
+
+console.log('boss level generator test passed');

@@ -32,7 +32,7 @@ Collide.hitsSolid = function (x, y, width, height, previousY, verticalStep, igno
   for (var i = 0; i < squares.length; i++) {
     if (Level.isSolid(squares[i].col, squares[i].row)) { return true; }
     if (ignorePlatforms || verticalStep <= 0 || !Level.isPlatform(squares[i].col, squares[i].row)) { continue; }
-    var platformTop = squares[i].row * CONFIG.TILE;
+    var platformTop = squares[i].row * CONFIG.TILE + CONFIG.TILE - 8;
     if (previousY + height <= platformTop && y + height >= platformTop) { return true; }
   }
   return false;

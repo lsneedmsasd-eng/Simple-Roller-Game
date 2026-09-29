@@ -43,7 +43,7 @@ Level.loadData = function (whenDone) {
     });
 };
 
-Level.generateRandom = function () {
+Level.generateRandom = function (levelNumber) {
   var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom", "water"];
   var challengePieces = ["gap", "spikes", "spikepit", "enemy", "runner", "bat", "brute"];
   var pieces = ["start", "decor", "ladder"];
@@ -59,12 +59,17 @@ Level.generateRandom = function () {
 
   pieces.push("vertical");
   pieces.push("flat");
-  var enemyPieces = ["enemy", "runner", "bat", "brute"];
-  pieces.push(enemyPieces[Math.floor(Math.random() * enemyPieces.length)]);
+  var isBossLevel = levelNumber !== undefined && levelNumber % 10 === 0;
+  if (isBossLevel) {
+    pieces.push("bossRoom");
+  } else {
+    var enemyPieces = ["enemy", "runner", "bat", "brute"];
+    pieces.push(enemyPieces[Math.floor(Math.random() * enemyPieces.length)]);
+  }
   var finishName = Level.levels.length % 2 === 0 ? "finishHigh" : "finish";
   pieces.push(finishName);
   Level.levels.push({
-    name: "Random Run " + (Level.levels.length - 1),
+    name: isBossLevel ? "Boss Room - Level " + levelNumber : "Random Run " + (Level.levels.length - 1),
     pieces: pieces,
     procedural: true
   });

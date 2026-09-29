@@ -51,7 +51,7 @@ Game.startLevel = function (levelNumber) {
 };
 
 Game.startRandomLevel = function () {
-  Game.startLevel(Level.generateRandom());
+  Game.startLevel(Level.generateRandom(Game.completedLevels + 1));
 };
 
 Game.openShop = function () {

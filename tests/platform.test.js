@@ -16,8 +16,8 @@ const sandbox = {
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../js/collide.js'), 'utf8'), sandbox);
 const Collide = sandbox.Collide;
 
-assert.strictEqual(Collide.hitsSolid(40, 9, 32, 32, 8, 1, false), true);
-assert.strictEqual(Collide.hitsSolid(40, 7, 32, 32, 8, -1, false), false);
-assert.strictEqual(Collide.hitsSolid(40, 9, 32, 32, 8, 1, true), false);
+assert.strictEqual(Collide.hitsSolid(40, 41, 32, 32, 40, 1, false), true);
+assert.strictEqual(Collide.hitsSolid(40, 39, 32, 32, 40, -1, false), false);
+assert.strictEqual(Collide.hitsSolid(40, 41, 32, 32, 40, 1, true), false);
 
 console.log('one-way platform test passed');
