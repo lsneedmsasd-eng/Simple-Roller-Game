@@ -43,7 +43,12 @@ Level.loadData = function (whenDone) {
     });
 };
 
-Level.generateRandom = function (levelNumber) {
+Level.generateRandom = function (levelNumber, variant) {
+  if (variant === undefined) {
+    var variants = ["normal", "upsideDown", "icy"];
+    variant = variants[Math.floor(Math.random() * variants.length)];
+  }
+
   var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom"];
   var challengePieces = ["gap", "spikes", "spikepit", "enemy", "runner", "bat", "brute"];
   var pieces = ["start", "decor", "ladder"];
@@ -71,7 +76,8 @@ Level.generateRandom = function (levelNumber) {
   Level.levels.push({
     name: isBossLevel ? "Boss Room - Level " + levelNumber : "Random Run " + (Level.levels.length - 1),
     pieces: pieces,
-    procedural: true
+    procedural: true,
+    variant: variant
   });
   return Level.levels.length - 1;
 };
@@ -103,7 +109,7 @@ Level.build = function (levelNumber) {
     }
   }
 
-  if (level.procedural) { Level.randomizeWorld(); }
+  if (level.procedural) { Level.randomizeWorld(level.variant || "normal"); }
 
   Level.findStart();
   Level.spawnEnemies();
@@ -112,9 +118,10 @@ Level.build = function (levelNumber) {
 
 // Give generated levels a new silhouette and a different set of landmarks.
 // The hand-authored levels remain exactly as designed in pieces.json.
-Level.randomizeWorld = function () {
-  var floorRow = 8;
-  var nextFloor = 7 + Math.floor(Math.random() * 3);
+Level.randomizeWorld = function (variant) {
+  variant = variant || "normal";
+  var floorRow = variant === "upsideDown" ? 1 : 8;
+  var nextFloor = variant === "upsideDown" ? 2 + Math.floor(Math.random() * 3) : 7 + Math.floor(Math.random() * 3);
   var protectedColumns = {};
 
   for (var row = 0; row < CONFIG.ROWS; row++) {
@@ -125,7 +132,7 @@ Level.randomizeWorld = function () {
     }
   }
 
-  var blockStyles = ["#", "!", "@", "%"];
+  var blockStyles = variant === "icy" ? ["@", "%", "!", "#"] : ["#", "!", "@", "%"];
 
   // A random walk creates flats, ramps, hills, ledges, and occasional pits.
   for (var column = 0; column < Level.cols; column++) {
@@ -133,6 +140,18 @@ Level.randomizeWorld = function () {
     if (!protectedColumns[column] && Math.random() < 0.18) {
       nextFloor += Math.floor(Math.random() * 3) - 1;
     }
+
+    if (variant === "upsideDown") {
+      nextFloor = Math.max(0, Math.min(4, nextFloor));
+      if (protectedColumns[column]) { nextFloor = 1; }
+      for (var groundRow = 0; groundRow <= nextFloor; groundRow++) {
+        var topBlock = (groundRow <= nextFloor && !isGap) ? blockStyles[Math.floor(Math.random() * blockStyles.length)] : ".";
+        Level.grid[groundRow] = Level.grid[groundRow].substring(0, column) +
+          topBlock + Level.grid[groundRow].substring(column + 1);
+      }
+      continue;
+    }
+
     nextFloor = Math.max(5, Math.min(floorRow, nextFloor));
     if (protectedColumns[column]) { nextFloor = floorRow; }
 
@@ -147,16 +166,19 @@ Level.randomizeWorld = function () {
   for (var landmarkColumn = 3; landmarkColumn < Level.cols - 3; landmarkColumn += 2 + Math.floor(Math.random() * 5)) {
     if (protectedColumns[landmarkColumn] || Math.random() < 0.35) { continue; }
     var landmarkHeight = 1 + Math.floor(Math.random() * 3);
-    var topRow = 7 - landmarkHeight;
+    var topRow = variant === "upsideDown" ? 2 + Math.floor(Math.random() * 2) : 7 - landmarkHeight;
     if (Level.charAt(landmarkColumn, topRow) !== ".") { continue; }
-    for (var landmarkRow = topRow; landmarkRow < 7; landmarkRow++) {
+    var startRow = variant === "upsideDown" ? 0 : topRow;
+    var endRow = variant === "upsideDown" ? topRow : 7;
+    for (var landmarkRow = startRow; landmarkRow <= endRow; landmarkRow++) {
       if (Level.charAt(landmarkColumn, landmarkRow) === ".") {
         Level.grid[landmarkRow] = Level.grid[landmarkRow].substring(0, landmarkColumn) + "#" +
           Level.grid[landmarkRow].substring(landmarkColumn + 1);
       }
     }
     if (Math.random() < 0.5 && Level.charAt(landmarkColumn + 1, topRow) === ".") {
-      Level.grid[topRow] = Level.grid[topRow].substring(0, landmarkColumn + 1) + "=" +
+      var platformChar = variant === "upsideDown" ? "=" : "=";
+      Level.grid[topRow] = Level.grid[topRow].substring(0, landmarkColumn + 1) + platformChar +
         Level.grid[topRow].substring(landmarkColumn + 2);
     }
   }

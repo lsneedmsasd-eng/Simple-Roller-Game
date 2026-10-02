@@ -195,22 +195,38 @@ Draw.decor = function (x, y, size, kind) {
 
 Draw.enemy = function (x, y, size, kind) {
   var ctx = Draw.ctx;
-  ctx.fillStyle = "#ff0000";
   if (kind === "B") {
+    ctx.fillStyle = "#7b1833";
     ctx.beginPath();
-    ctx.moveTo(x + size / 2, y + 4);
-    ctx.lineTo(x + size - 2, y + size - 8);
-    ctx.lineTo(x + size / 2, y + size - 14);
-    ctx.lineTo(x + 2, y + size - 8);
+    ctx.moveTo(x + size / 2, y + 2);
+    ctx.lineTo(x + size - 4, y + size - 6);
+    ctx.lineTo(x + size / 2, y + size - 10);
+    ctx.lineTo(x + 4, y + size - 6);
     ctx.closePath();
     ctx.fill();
-  } else {
-    var inset = kind === "H" ? 2 : 6;
-    ctx.fillRect(x + inset, y + 6, size - inset * 2, size - 6);
+    ctx.fillStyle = "#ff7a7a";
+    ctx.fillRect(x + 7, y + 12, size - 14, 10);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(x + 10, y + 14, 4, 4);
+    ctx.fillRect(x + size - 14, y + 14, 4, 4);
+    return;
   }
-  ctx.fillStyle = "#000000";
-  ctx.fillRect(x + 10, y + 14, 4, 4);
-  ctx.fillRect(x + size - 14, y + 14, 4, 4);
+
+  var baseColor = kind === "H" ? "#d93d3d" : "#ff4d4d";
+  ctx.fillStyle = baseColor;
+  ctx.fillRect(x + 6, y + 6, size - 12, size - 8);
+  ctx.fillStyle = "#1d1d1d";
+  ctx.fillRect(x + 10, y + 12, 5, 5);
+  ctx.fillRect(x + size - 15, y + 12, 5, 5);
+  ctx.fillStyle = "#ffd6d6";
+  ctx.fillRect(x + 10, y + 20, 4, 4);
+  ctx.fillRect(x + size - 14, y + 20, 4, 4);
+  ctx.strokeStyle = "rgba(0,0,0,0.35)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x + 8, y + 23);
+  ctx.lineTo(x + size - 8, y + 23);
+  ctx.stroke();
 };
 
 Draw.collectible = function (x, y, size, kind) {

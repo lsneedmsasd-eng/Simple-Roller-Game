@@ -51,7 +51,9 @@ Game.startLevel = function (levelNumber) {
 };
 
 Game.startRandomLevel = function () {
-  Game.startLevel(Level.generateRandom(Game.completedLevels + 1));
+  var variants = ["normal", "upsideDown", "icy"];
+  var variant = variants[Math.floor(Math.random() * variants.length)];
+  Game.startLevel(Level.generateRandom(Game.completedLevels + 1, variant));
 };
 
 Game.openShop = function () {
