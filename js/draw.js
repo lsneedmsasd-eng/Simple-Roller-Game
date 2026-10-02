@@ -64,7 +64,7 @@ Draw.world = function () {
       var x = col * size;
       var y = row * size;
 
-      if (here === "#") { Draw.block(x, y, size); }
+      if (["#", "!", "@", "%"].indexOf(here) >= 0) { Draw.block(x, y, size, here); }
       if (here === "=") { Draw.platform(x, y, size); }
       if (here === "^") { Draw.spike(x, y, size); }
       if (here === "L") { Draw.ladder(x, y, size); }
@@ -86,17 +86,36 @@ Draw.world = function () {
   }
 };
 
-// A solid block: white inside, black outline.
-Draw.block = function (x, y, size) {
+// A solid block: a few stone variants so the world has more visual depth.
+Draw.block = function (x, y, size, kind) {
   var ctx = Draw.ctx;
-  ctx.fillStyle = "#ff0000";
+  var palette = {
+    "#": ["#e0e0e0", "#c0c0c0", "#8a8a8a"],
+    "!": ["#d28f57", "#b66730", "#7b3b14"],
+    "@": ["#7cc8d9", "#4fa5b5", "#255b6d"],
+    "%": ["#7fb36a", "#5b8a4a", "#2f4c2a"]
+  };
+  var colors = palette[kind] || palette["#"];
+  ctx.fillStyle = colors[0];
   ctx.fillRect(x, y, size, size);
+  ctx.fillStyle = colors[1];
+  ctx.fillRect(x + 4, y + 4, size - 8, size - 12);
+  ctx.fillStyle = colors[2];
+  ctx.fillRect(x + 8, y + 8, size - 16, 5);
+  ctx.fillRect(x + 8, y + size - 13, size - 16, 4);
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = CONFIG.LINE_WIDTH;
   ctx.strokeRect(x + CONFIG.LINE_WIDTH / 2,
                  y + CONFIG.LINE_WIDTH / 2,
                  size - CONFIG.LINE_WIDTH,
                  size - CONFIG.LINE_WIDTH);
+  ctx.strokeStyle = "rgba(255,255,255,0.45)";
+  ctx.beginPath();
+  ctx.moveTo(x + 5, y + 5);
+  ctx.lineTo(x + size - 8, y + 5);
+  ctx.moveTo(x + 5, y + 5);
+  ctx.lineTo(x + 5, y + size - 8);
+  ctx.stroke();
 };
 
 Draw.platform = function (x, y, size) {
@@ -109,16 +128,35 @@ Draw.platform = function (x, y, size) {
     size - CONFIG.LINE_WIDTH, 8 - CONFIG.LINE_WIDTH / 2);
 };
 
-// A spike: a solid black triangle pointing up.
+// A spike: sharper, layered, and a bit more convincing as a hazard.
 Draw.spike = function (x, y, size) {
   var ctx = Draw.ctx;
-  ctx.fillStyle = "#ff0000";
+  ctx.fillStyle = "#d9d9d9";
   ctx.beginPath();
-  ctx.moveTo(x, y + size);
-  ctx.lineTo(x + size / 2, y);
-  ctx.lineTo(x + size, y + size);
+  ctx.moveTo(x + 2, y + size);
+  ctx.lineTo(x + size * 0.25, y + size * 0.32);
+  ctx.lineTo(x + size * 0.5, y);
+  ctx.lineTo(x + size * 0.75, y + size * 0.32);
+  ctx.lineTo(x + size - 2, y + size);
   ctx.closePath();
   ctx.fill();
+  ctx.fillStyle = "#ff3b3b";
+  ctx.beginPath();
+  ctx.moveTo(x + 4, y + size);
+  ctx.lineTo(x + size * 0.28, y + size * 0.42);
+  ctx.lineTo(x + size * 0.5, y + 8);
+  ctx.lineTo(x + size * 0.72, y + size * 0.42);
+  ctx.lineTo(x + size - 4, y + size);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(x + 4, y + size - 4, size - 8, 4);
+  ctx.strokeStyle = "rgba(255,255,255,0.4)";
+  ctx.beginPath();
+  ctx.moveTo(x + size * 0.3, y + size * 0.55);
+  ctx.lineTo(x + size * 0.5, y + 10);
+  ctx.lineTo(x + size * 0.7, y + size * 0.55);
+  ctx.stroke();
 };
 
 Draw.ladder = function (x, y, size) {

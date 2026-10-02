@@ -125,6 +125,8 @@ Level.randomizeWorld = function () {
     }
   }
 
+  var blockStyles = ["#", "!", "@", "%"];
+
   // A random walk creates flats, ramps, hills, ledges, and occasional pits.
   for (var column = 0; column < Level.cols; column++) {
     var isGap = !protectedColumns[column] && Math.random() < 0.06;
@@ -135,8 +137,9 @@ Level.randomizeWorld = function () {
     if (protectedColumns[column]) { nextFloor = floorRow; }
 
     for (var groundRow = floorRow; groundRow < CONFIG.ROWS; groundRow++) {
+      var blockChar = (groundRow >= nextFloor && !isGap) ? blockStyles[Math.floor(Math.random() * blockStyles.length)] : ".";
       Level.grid[groundRow] = Level.grid[groundRow].substring(0, column) +
-        (groundRow >= nextFloor && !isGap ? "#" : ".") + Level.grid[groundRow].substring(column + 1);
+        blockChar + Level.grid[groundRow].substring(column + 1);
     }
   }
 
@@ -312,7 +315,7 @@ Level.charAt = function (col, row) {
   return Level.grid[row].charAt(col);
 };
 
-Level.isSolid  = function (col, row) { return Level.charAt(col, row) === "#"; };
+Level.isSolid  = function (col, row) { return ["#", "!", "@", "%"].indexOf(Level.charAt(col, row)) >= 0; };
 Level.isPlatform = function (col, row) { return Level.charAt(col, row) === "="; };
 Level.isSpike  = function (col, row) { return Level.charAt(col, row) === "^"; };
 Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };

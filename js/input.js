@@ -21,6 +21,7 @@ var Input = {
 
 // Called whenever a key goes DOWN.
 window.addEventListener("keydown", function (event) {
+  if (event.repeat && (event.key === "r" || event.key === "R")) { return; }
   setKey(event.key, true);
   // stop the arrow keys and space from scrolling the page
   if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].indexOf(event.key) >= 0) {

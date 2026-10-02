@@ -81,8 +81,9 @@ Game.showMessage = function (text) {
 // --- ONE FRAME --------------------------------------------------------
 Game.update = function () {
 
-  // R always restarts, no matter what mode we are in.
+  // R always restarts, no matter what mode we are in, but only once per press.
   if (Input.restart) {
+    Input.restart = false;
     Game.startLevel(Game.levelNumber);
     return;
   }
