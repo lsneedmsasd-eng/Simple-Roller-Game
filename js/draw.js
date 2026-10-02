@@ -69,7 +69,6 @@ Draw.world = function () {
       if (here === "^") { Draw.spike(x, y, size); }
       if (here === "L") { Draw.ladder(x, y, size); }
       if (here === "*" || here === "+" || here === "~") { Draw.decor(x, y, size, here); }
-      if (here === "W") { Draw.water(x, y, size); }
       if (here === "F") { Draw.finish(x, y, size); }
     }
   }
@@ -154,19 +153,6 @@ Draw.decor = function (x, y, size, kind) {
     ctx.fillRect(x, y + 26, size, 6);
     ctx.fillRect(x + 8, y + 18, 24, 8);
   }
-};
-
-Draw.water = function (x, y, size) {
-  var ctx = Draw.ctx;
-  ctx.fillStyle = "#0066ff";
-  ctx.fillRect(x, y + 8, size, size - 8);
-  ctx.strokeStyle = "#66ccff";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x + 4, y + 16);
-  ctx.quadraticCurveTo(x + size / 4, y + 10, x + size / 2, y + 16);
-  ctx.quadraticCurveTo(x + size * 3 / 4, y + 22, x + size - 4, y + 16);
-  ctx.stroke();
 };
 
 Draw.enemy = function (x, y, size, kind) {

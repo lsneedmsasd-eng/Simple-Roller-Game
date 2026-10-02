@@ -44,9 +44,8 @@ const Player = sandbox.Player;
 Player.reset();
 
 for (let frame = 0; frame < 3; frame += 1) Player.update();
-assert.strictEqual(Player.oxygen, 0);
-assert.strictEqual(Player.isDead(), true);
-assert.strictEqual(Player.deathReason, 'oxygen');
+assert.strictEqual(Player.oxygen, 3);
+assert.strictEqual(Player.isDead(), false);
 
 sandbox.inWater = false;
 Player.oxygen = 1;

@@ -101,8 +101,7 @@ Player.update = function (deltaFrames) {
   } else if (Input.jump && Player.onGround) {
     Player.vy = -(CONFIG.JUMP_POWER + Player.jumpBonus);   // negative is UP
     Player.onGround = false;
-    var inWaterBeforeMove = Collide.hitsWater && Collide.hitsWater(Player.x, Player.y, size, size);
-    Player.vy = Player.vy + (inWaterBeforeMove ? CONFIG.WATER_GRAVITY : CONFIG.GRAVITY) * deltaFrames;
+    Player.vy = Player.vy + CONFIG.GRAVITY * deltaFrames;
   } else if (onLadder) {
     Player.vy = 0;
   } else {
@@ -157,11 +156,7 @@ Player.update = function (deltaFrames) {
     Level.collectAt(Player.x, Player.y, size, size);
   }
 
-  if (Collide.hitsWater && Collide.hitsWater(Player.x, Player.y, size, size)) {
-    Player.oxygen = Math.max(0, Player.oxygen - CONFIG.OXYGEN_DRAIN * deltaFrames);
-  } else {
-    Player.oxygen = Math.min(Player.maxOxygen, Player.oxygen + CONFIG.OXYGEN_RECOVERY * deltaFrames);
-  }
+  Player.oxygen = Math.min(Player.maxOxygen, Player.oxygen + CONFIG.OXYGEN_RECOVERY * deltaFrames);
 };
 
 Player.isAttacking = function () { return Player.attackFrames > 0; };

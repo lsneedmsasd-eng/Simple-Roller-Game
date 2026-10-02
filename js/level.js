@@ -44,7 +44,7 @@ Level.loadData = function (whenDone) {
 };
 
 Level.generateRandom = function (levelNumber) {
-  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom", "water"];
+  var safePieces = ["flat", "step", "platform", "stairs", "ladder", "vertical", "terrain", "bridge", "cave", "decor", "rollingHills", "marsh", "crystalCave", "coinTrail", "gemTrail", "keyRoom"];
   var challengePieces = ["gap", "spikes", "spikepit", "enemy", "runner", "bat", "brute"];
   var pieces = ["start", "decor", "ladder"];
   var previousWasChallenge = false;
@@ -319,7 +319,6 @@ Level.isLadder = function (col, row) { return Level.charAt(col, row) === "L"; };
 Level.isEnemyChar = function (kind) { return ["E", "M", "B", "H"].indexOf(kind) >= 0; };
 Level.isEnemy  = function (col, row) { return Level.isEnemyChar(Level.charAt(col, row)); };
 Level.isCollectibleChar = function (kind) { return ["C", "G", "K"].indexOf(kind) >= 0; };
-Level.isWater = function (col, row) { return Level.charAt(col, row) === "W"; };
 Level.isFinish = function (col, row) { return Level.charAt(col, row) === "F"; };
 
 // How wide is the whole world, in pixels?
