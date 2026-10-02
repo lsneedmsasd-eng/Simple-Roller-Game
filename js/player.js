@@ -25,7 +25,8 @@ var Player = {
   maxOxygen: CONFIG.MAX_OXYGEN,
   oxygen: CONFIG.MAX_OXYGEN,
   deathReason: "",
-  dropThroughFrames: 0
+  dropThroughFrames: 0,
+  trail: []
 };
 
 // Put the player back at the level's S square.
@@ -45,6 +46,7 @@ Player.reset = function () {
   Player.oxygen = Player.maxOxygen;
   Player.deathReason = "";
   Player.dropThroughFrames = 0;
+  Player.trail = [];
 };
 
 // Run one frame of player movement.
@@ -60,6 +62,15 @@ Player.update = function (deltaFrames) {
   if (Input.attack && Player.attackCooldown === 0) {
     Player.attackFrames = CONFIG.ATTACK_DURATION;
     Player.attackCooldown = CONFIG.ATTACK_COOLDOWN;
+  }
+
+  if (Math.abs(Player.vx) > 0.25 || Math.abs(Player.vy) > 0.25) {
+    Player.trail.push({ x: Player.x + CONFIG.PLAYER_SIZE / 2, y: Player.y + CONFIG.PLAYER_SIZE / 2, life: 12 });
+    if (Player.trail.length > 10) { Player.trail.shift(); }
+  }
+  for (var i = 0; i < Player.trail.length; i++) {
+    Player.trail[i].life -= 1;
+    if (Player.trail[i].life <= 0) { Player.trail.splice(i, 1); i--; }
   }
 
   // --- 1. decide how fast to go sideways ------------------------------

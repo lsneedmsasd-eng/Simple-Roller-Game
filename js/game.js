@@ -50,6 +50,13 @@ Game.startLevel = function (levelNumber) {
   Game.showMessage("");
 };
 
+Game.restartCurrentLevel = function () {
+  Player.reset();
+  Game.mode = "playing";
+  Game.hideMenu();
+  Game.showMessage("");
+};
+
 Game.startRandomLevel = function () {
   var variants = ["normal", "upsideDown", "icy"];
   var variant = variants[Math.floor(Math.random() * variants.length)];
@@ -83,10 +90,10 @@ Game.showMessage = function (text) {
 // --- ONE FRAME --------------------------------------------------------
 Game.update = function () {
 
-  // R always restarts, no matter what mode we are in, but only once per press.
+  // R respawns the player without regenerating the current level.
   if (Input.restart) {
     Input.restart = false;
-    Game.startLevel(Game.levelNumber);
+    Game.restartCurrentLevel();
     return;
   }
 

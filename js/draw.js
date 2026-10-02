@@ -34,8 +34,8 @@ Draw.updateCamera = function () {
 Draw.everything = function () {
   var ctx = Draw.ctx;
 
-  // 1. wipe the screen white
-  ctx.fillStyle = "#000000";
+  // 1. wipe the screen with a sky background
+  ctx.fillStyle = "#bfe6f6";
   ctx.fillRect(0, 0, CONFIG.CANVAS_W, CONFIG.CANVAS_H);
 
   // 2. shift everything left so the camera looks like it moved right
@@ -86,36 +86,34 @@ Draw.world = function () {
   }
 };
 
-// A solid block: a few stone variants so the world has more visual depth.
+// A solid block: grass on top, dirt below, styled like the reference image.
 Draw.block = function (x, y, size, kind) {
   var ctx = Draw.ctx;
-  var palette = {
-    "#": ["#e0e0e0", "#c0c0c0", "#8a8a8a"],
-    "!": ["#d28f57", "#b66730", "#7b3b14"],
-    "@": ["#7cc8d9", "#4fa5b5", "#255b6d"],
-    "%": ["#7fb36a", "#5b8a4a", "#2f4c2a"]
-  };
-  var colors = palette[kind] || palette["#"];
-  ctx.fillStyle = colors[0];
-  ctx.fillRect(x, y, size, size);
-  ctx.fillStyle = colors[1];
-  ctx.fillRect(x + 4, y + 4, size - 8, size - 12);
-  ctx.fillStyle = colors[2];
-  ctx.fillRect(x + 8, y + 8, size - 16, 5);
-  ctx.fillRect(x + 8, y + size - 13, size - 16, 4);
+  var grassTop = 10;
+  var dirtTop = y + grassTop;
+
+  ctx.fillStyle = "#5fbf4a";
+  ctx.fillRect(x, y, size, grassTop);
+  ctx.fillStyle = "#4b8d2d";
+  ctx.fillRect(x, y + 4, size, 2);
+  ctx.fillStyle = "#8b5a2b";
+  ctx.fillRect(x, dirtTop, size, size - grassTop);
+  ctx.fillStyle = "#5a3a1e";
+  ctx.fillRect(x, dirtTop + 4, size, 2);
+  ctx.fillStyle = "#6c4220";
+  for (var row = 0; row < 4; row++) {
+    for (var col = 0; col < 4; col++) {
+      if ((row + col) % 2 === 0) {
+        ctx.fillRect(x + col * 10 + 2, dirtTop + row * 8 + 2, 4, 4);
+      }
+    }
+  }
+  ctx.fillStyle = "#2b1c14";
+  ctx.fillRect(x + 2, y + 6, 4, 4);
+  ctx.fillRect(x + size - 6, y + 4, 4, 4);
   ctx.strokeStyle = "#000000";
-  ctx.lineWidth = CONFIG.LINE_WIDTH;
-  ctx.strokeRect(x + CONFIG.LINE_WIDTH / 2,
-                 y + CONFIG.LINE_WIDTH / 2,
-                 size - CONFIG.LINE_WIDTH,
-                 size - CONFIG.LINE_WIDTH);
-  ctx.strokeStyle = "rgba(255,255,255,0.45)";
-  ctx.beginPath();
-  ctx.moveTo(x + 5, y + 5);
-  ctx.lineTo(x + size - 8, y + 5);
-  ctx.moveTo(x + 5, y + 5);
-  ctx.lineTo(x + 5, y + size - 8);
-  ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, size - 1, size - 1);
 };
 
 Draw.platform = function (x, y, size) {
@@ -296,13 +294,28 @@ Draw.finish = function (x, y, size) {
 
 // The player: a white circle with a black outline and one off-center
 // black dot, so you can see it roll.
+Draw.windTrail = function () {
+  var ctx = Draw.ctx;
+  for (var i = 0; i < Player.trail.length; i++) {
+    var puff = Player.trail[i];
+    var alpha = puff.life / 12;
+    var offset = (Player.facing > 0 ? -1 : 1) * (i + 1) * 4;
+    ctx.fillStyle = "rgba(255, 255, 255, " + (0.12 + alpha * 0.3) + ")";
+    ctx.beginPath();
+    ctx.ellipse(puff.x + offset, puff.y, 8, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+};
+
 Draw.player = function () {
   var ctx = Draw.ctx;
   var r = CONFIG.PLAYER_RADIUS;
   var centerX = Player.x + CONFIG.PLAYER_SIZE / 2;
   var centerY = Player.y + CONFIG.PLAYER_SIZE / 2;
 
-  // the circle
+  Draw.windTrail();
+
+  // player body
   ctx.fillStyle = "#ff0000";
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = CONFIG.LINE_WIDTH;
@@ -312,13 +325,20 @@ Draw.player = function () {
   ctx.stroke();
 
   if (Player.isAttacking()) {
-    ctx.strokeStyle = "#ff0000";
-    ctx.lineWidth = 5;
+    var swing = 1 - Player.attackFrames / CONFIG.ATTACK_DURATION;
+    var arcStart = Player.facing > 0 ? centerX + r : centerX - r;
+    var arcEnd = Player.facing > 0 ? arcStart + 26 + swing * 18 : arcStart - 26 - swing * 18;
+    var arcBaseY = centerY + (Math.sin(swing * Math.PI) * 12);
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    var attackStart = Player.facing > 0 ? centerX + r : centerX - r;
-    var attackEnd = Player.facing > 0 ? attackStart + 28 : attackStart - 28;
-    ctx.moveTo(attackStart, centerY - 10);
-    ctx.lineTo(attackEnd, centerY + 10);
+    ctx.moveTo(Player.facing > 0 ? centerX + 6 : centerX - 6, centerY - 4);
+    ctx.lineTo(arcEnd, arcBaseY);
+    ctx.stroke();
+    ctx.strokeStyle = "#ff3333";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(Player.facing > 0 ? centerX + 18 : centerX - 18, centerY, 16 + swing * 10, Player.facing > 0 ? -0.9 : Math.PI - 0.9, Player.facing > 0 ? 0.9 : Math.PI + 0.9);
     ctx.stroke();
   }
 
